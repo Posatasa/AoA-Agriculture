@@ -18,7 +18,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -31,10 +35,17 @@ import net.minecraftforge.registries.ForgeRegistries;
 /**
  * The candied water bottle: AoA's sweet fluid, in a vanilla glass bottle.
  *
- * <p>Vanilla's glass bottle only knows {@code #forge:water} - it fills from water and nothing else -
- * so a bottle of AoA's candied water has to be arranged separately. Doing it with Forge's
- * right-click event rather than by patching vanilla's bottle keeps the two apart: vanilla keeps
- * filling bottles from water exactly as before, and this only ever acts on AoA's fluid.
+ * <p>Two things make this less simple than it looks.
+ *
+ * <p>The first is that AoA puts its candied water in the {@code minecraft:water} fluid tag, so
+ * vanilla's glass bottle treats it as water and hands back a <em>water bottle</em>. Anything that
+ * wants to bottle it has to run before vanilla's bottle does.
+ *
+ * <p>The second is which event that is. Aiming at a fluid surface is an <em>item</em> use: the
+ * client's own block hit does not include fluids, so the click never takes the block path, and
+ * {@code RightClickBlock} - the obvious choice - does not fire at all. Both events are handled for
+ * that reason: one is the path a fluid click takes, the other covers a click that lands on a block,
+ * and they are mutually exclusive per click.
  */
 public final class Bottles {
     private static final DeferredRegister<Item> ITEMS =
@@ -62,54 +73,76 @@ public final class Bottles {
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
-        MinecraftForge.EVENT_BUS.addListener(Bottles::onFill);
+        MinecraftForge.EVENT_BUS.addListener(Bottles::onUseItem);
+        MinecraftForge.EVENT_BUS.addListener(Bottles::onUseBlock);
+    }
+
+    /** The path a click on a fluid takes. */
+    @SubscribeEvent
+    public static void onUseItem(PlayerInteractEvent.RightClickItem event) {
+        if (fill(event.getPlayer(), event.getWorld(), event.getHand(), event.getItemStack())) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** The path a click that lands on a block takes. */
+    @SubscribeEvent
+    public static void onUseBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (fill(event.getPlayer(), event.getWorld(), event.getHand(), event.getItemStack())) {
+            event.setUseBlock(Event.Result.DENY);
+            event.setUseItem(Event.Result.DENY);
+            event.setCanceled(true);
+        }
     }
 
     /**
      * Fills a glass bottle from AoA's candied water, the way vanilla fills one from water.
      *
-     * <p>Everything is done only after the fluid has been identified as candied water and the player
-     * is allowed to touch it, so a bottle pointed at anything else keeps vanilla's behaviour - and
-     * the source block is never taken for a fluid that will not be bottled.
+     * <p>Returns whether it did anything. Everything is decided before the fluid is taken, so a
+     * bottle pointed at anything else keeps vanilla's behaviour and no source is ever lost.
      */
-    @SubscribeEvent
-    public static void onFill(PlayerInteractEvent.RightClickBlock event) {
-        PlayerEntity player = event.getPlayer();
-        ItemStack stack = event.getItemStack();
+    private static boolean fill(PlayerEntity player, World world, Hand hand, ItemStack stack) {
         if (stack.isEmpty() || stack.getItem() != Items.GLASS_BOTTLE) {
-            return;
+            return false;
         }
-        World world = event.getWorld();
-        BlockPos pos = event.getPos();
+        BlockRayTraceResult hit = aimedAt(player, world);
+        if (hit == null) {
+            return false;
+        }
+        BlockPos pos = hit.getBlockPos();
         FluidState fluidState = world.getFluidState(pos);
         // Deliberately not "is this a source block": AoA builds its fluid blocks from the FLOWING
-        // fluid, so their state reports itself as flowing even for a full block, and gating on that
-        // let this handler step aside and vanilla's bottle hand back a water bottle instead.
-        // takeLiquid below is the real test - it returns EMPTY unless the block is full.
+        // fluid, so their state reports itself as flowing even for a full block. takeLiquid below is
+        // the real test - it returns EMPTY unless the block is full.
         if (!isCandiedWater(fluidState.getType())) {
-            return;
+            return false;
         }
         BlockState state = world.getBlockState(pos);
         if (!(state.getBlock() instanceof IBucketPickupHandler)
                 || !world.mayInteract(player, pos)
-                || !player.mayUseItemAt(pos, event.getFace(), stack)) {
-            return;
+                || !player.mayUseItemAt(pos, hit.getDirection(), stack)) {
+            return false;
         }
         Fluid taken = ((IBucketPickupHandler) state.getBlock()).takeLiquid(world, pos, state);
         if (taken == Fluids.EMPTY) {
-            return;
+            return false;
         }
 
         player.awardStat(Stats.ITEM_USED.get(Items.GLASS_BOTTLE));
         world.playSound(player, pos, SoundEvents.BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
         ItemStack filled = DrinkHelper.createFilledResult(stack, player,
                 new ItemStack(CANDIED_WATER_BOTTLE.get()));
-        player.setItemInHand(event.getHand() == null ? Hand.MAIN_HAND : event.getHand(), filled);
+        player.setItemInHand(hand, filled);
+        return true;
+    }
 
-        // Stop here, so vanilla's bottle does not also get a turn at this click.
-        event.setUseBlock(Event.Result.DENY);
-        event.setUseItem(Event.Result.DENY);
-        event.setCanceled(true);
+    /** What the player is looking at, in the same way vanilla's bottle looks at it. */
+    private static BlockRayTraceResult aimedAt(PlayerEntity player, World world) {
+        double reach = player.getAttributeValue(ForgeMod.REACH_DISTANCE.get());
+        Vector3d eye = player.getEyePosition(1.0F);
+        Vector3d end = eye.add(player.getLookAngle().scale(reach));
+        return world.clip(new RayTraceContext(eye, end, RayTraceContext.BlockMode.OUTLINE,
+                RayTraceContext.FluidMode.SOURCE_ONLY, player));
     }
 
     /**
@@ -123,7 +156,8 @@ public final class Bottles {
             return false;
         }
         Fluid candied = Buckets.candiedWater();
-        return candied != Fluids.EMPTY && BucketFamily.sourceOf(fluid) == BucketFamily.sourceOf(candied);
+        return candied != Fluids.EMPTY
+                && BucketFamily.sourceOf(fluid) == BucketFamily.sourceOf(candied);
     }
 
     private Bottles() {}

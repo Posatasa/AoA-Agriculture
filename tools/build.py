@@ -531,6 +531,31 @@ def verify_buckets(staging, remapped_dir):
              "a glass bottle could not be filled from it")):
         if (owner, member) not in references:
             problems.append("Bottles never calls %s.%s, so %s" % (owner, member, why))
+    # The fluid path is RightClickItem: the client's block hit excludes fluids, so a click on a fluid
+    # never reaches RightClickBlock. Dropping that listener would silently put the water bottle back.
+    # Both event types have to be present, since each covers one of the two click paths.
+    event_types = set()
+    for i in range(1, bottles.count):
+        entry = bottles.entries[i]
+        if entry is not None and entry[0] == remap.CONSTANT_UTF8:
+            event_types.add(bottles.utf8(i))
+    for event, why in (
+            ("PlayerInteractEvent$RightClickItem",
+             "a click on a fluid takes the item path, so RightClickBlock never fires for one"),
+            ("PlayerInteractEvent$RightClickBlock",
+             "a click that lands on a block takes the block path")):
+        if not any(event in name for name in event_types):
+            problems.append("Bottles does not listen to %s: %s" % (event.split("$")[-1], why))
+
+    # And each of them has to be handed to the bus. Checked against the source, because a forgotten
+    # registration line compiles perfectly and leaves a handler that never runs.
+    with open(os.path.join(ROOT, "src", "main", "java", "com", "posatasa", "aoaagriculture",
+                           "registry", "Bottles.java"), encoding="utf-8") as fh:
+        bottles_source = fh.read()
+    for handler in ("onUseItem", "onUseBlock"):
+        if "addListener(Bottles::%s)" % handler not in bottles_source:
+            problems.append("Bottles defines %s but never registers it" % handler)
+
     if ("net/minecraft/fluid/FluidState", "isSource") in references:
         problems.append("Bottles gates on FluidState.isSource, which is false for AoA's fluid blocks "
                         "because they are built from the flowing fluid - the fill would never happen")
