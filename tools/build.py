@@ -516,7 +516,8 @@ def verify_buckets(staging, remapped_dir):
     for i in range(1, bottles.count):
         entry = bottles.entries[i]
         if entry is None or entry[0] not in (remap.CONSTANT_METHODREF,
-                                             remap.CONSTANT_INTERFACE_METHODREF):
+                                             remap.CONSTANT_INTERFACE_METHODREF,
+                                             remap.CONSTANT_FIELDREF):
             continue
         payload = entry[1]
         owner = bottles.utf8(bottles.u2(bottles.entries[bottles.u2(payload)][1]))
@@ -527,8 +528,8 @@ def verify_buckets(staging, remapped_dir):
              "crafting it into sugar would eat the glass bottle"),
             ("net/minecraft/item/Food$Builder", "nutrition",
              "it would not restore any hunger"),
-            ("net/minecraft/block/IBucketPickupHandler", "takeLiquid",
-             "a glass bottle could not be filled from it")):
+            ("net/minecraft/block/FlowingFluidBlock", "LEVEL",
+             "it could not tell a full candied water block from a flowing edge")):
         if (owner, member) not in references:
             problems.append("Bottles never calls %s.%s, so %s" % (owner, member, why))
     # The fluid path is RightClickItem: the client's block hit excludes fluids, so a click on a fluid
@@ -556,6 +557,9 @@ def verify_buckets(staging, remapped_dir):
         if "addListener(Bottles::%s)" % handler not in bottles_source:
             problems.append("Bottles defines %s but never registers it" % handler)
 
+    if ("net/minecraft/block/IBucketPickupHandler", "takeLiquid") in references:
+        problems.append("Bottles takes the fluid out of the world; candied water is an endless pool, "
+                        "so bottling it must leave the block alone")
     if ("net/minecraft/fluid/FluidState", "isSource") in references:
         problems.append("Bottles gates on FluidState.isSource, which is false for AoA's fluid blocks "
                         "because they are built from the flowing fluid - the fill would never happen")

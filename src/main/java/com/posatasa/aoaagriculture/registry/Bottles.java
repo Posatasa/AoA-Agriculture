@@ -3,7 +3,7 @@ package com.posatasa.aoaagriculture.registry;
 import com.posatasa.aoaagriculture.item.BucketFamily;
 import com.posatasa.aoaagriculture.item.CandiedWaterBottleItem;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.IBucketPickupHandler;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -40,6 +40,9 @@ import net.minecraftforge.registries.ForgeRegistries;
  * <p>The first is that AoA puts its candied water in the {@code minecraft:water} fluid tag, so
  * vanilla's glass bottle treats it as water and hands back a <em>water bottle</em>. Anything that
  * wants to bottle it has to run before vanilla's bottle does.
+ *
+ * <p>What it does not do is take the water: candied water is an endless pool, so a bottle costs
+ * nothing and the block stays where it is.
  *
  * <p>The second is which event that is. Aiming at a fluid surface is an <em>item</em> use: the
  * client's own block hit does not include fluids, so the click never takes the block path, and
@@ -118,15 +121,14 @@ public final class Bottles {
             return false;
         }
         BlockState state = world.getBlockState(pos);
-        if (!(state.getBlock() instanceof IBucketPickupHandler)
+        if (!isFullSource(state)
                 || !world.mayInteract(player, pos)
                 || !player.mayUseItemAt(pos, hit.getDirection(), stack)) {
             return false;
         }
-        Fluid taken = ((IBucketPickupHandler) state.getBlock()).takeLiquid(world, pos, state);
-        if (taken == Fluids.EMPTY) {
-            return false;
-        }
+        // The source is deliberately left in the world. Candied water is an endless pool - the Shyre
+        // bucket treats it the same way - so bottling it costs nothing, and the block is only checked
+        // here, never taken.
 
         player.awardStat(Stats.ITEM_USED.get(Items.GLASS_BOTTLE));
         world.playSound(player, pos, SoundEvents.BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -143,6 +145,17 @@ public final class Bottles {
         Vector3d end = eye.add(player.getLookAngle().scale(reach));
         return world.clip(new RayTraceContext(eye, end, RayTraceContext.BlockMode.OUTLINE,
                 RayTraceContext.FluidMode.SOURCE_ONLY, player));
+    }
+
+    /**
+     * Whether this block is a full fluid block rather than a flowing edge.
+     *
+     * <p>This is the test {@code takeLiquid} would have made, kept here because the block is not taken:
+     * level 0 is a source, 1 to 7 are flowing, 8 is falling.
+     */
+    private static boolean isFullSource(BlockState state) {
+        return state.hasProperty(FlowingFluidBlock.LEVEL)
+                && state.getValue(FlowingFluidBlock.LEVEL) == 0;
     }
 
     /**
