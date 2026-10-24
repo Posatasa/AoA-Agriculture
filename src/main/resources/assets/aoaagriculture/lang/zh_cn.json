@@ -44,5 +44,6 @@
   "item.aoaagriculture.emberstone_bucket": "余烬桶",
   "item.aoaagriculture.emberstone_bucket.tooltip": "只装熔岩，最多 4 桶。",
   "item.aoaagriculture.lava_emberstone_bucket": "余烬熔岩桶",
-  "item.aoaagriculture.lava_emberstone_bucket.tooltip": "熔岩：%s / %s"
+  "item.aoaagriculture.lava_emberstone_bucket.tooltip": "熔岩：%s / %s",
+  "item.aoaagriculture.candied_water_bottle": "糖水瓶"
 }

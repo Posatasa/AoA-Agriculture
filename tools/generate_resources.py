@@ -265,6 +265,7 @@ def generate_textures():
         print("  %s: %d textures" % (name, len(tops)))
 
     generate_bucket_icons(zm, za)
+    generate_bottle_icon(zm, za)
 
 
 def generate_bucket_icons(zm, za):
@@ -356,6 +357,40 @@ def generate_bucket_icons(zm, za):
                 os.path.join(item_dir, "%s%s_bucket.png" % (prefix, metal_name)))
         print("  %s: %d bucket icons%s" % (metal_name, len(kinds),
                                            " (gradient)" if len(stops) > 1 else ""))
+
+
+def generate_bottle_icon(zm, za):
+    """The candied water bottle: vanilla's honey bottle, recoloured to AoA's candied water.
+
+    The honey bottle is the closest vanilla thing to a sweet drink in a bottle, so it is also the
+    right shape; only its colour changes, and only its colour is taken from AoA - never a pixel.
+    """
+    item_dir = os.path.join(ASSETS, "textures", "item")
+    os.makedirs(item_dir, exist_ok=True)
+
+    def load(archive, path):
+        with archive.open(path) as fh:
+            return np.asarray(Image.open(io.BytesIO(fh.read())).convert("RGBA")).astype(np.float64)
+
+    def luminance(rgb):
+        return 0.2126 * rgb[:, :, 0] + 0.7152 * rgb[:, :, 1] + 0.0722 * rgb[:, :, 2]
+
+    with za.open("assets/aoa3/textures/item/candied_water_bucket.png") as fh:
+        bucket = np.asarray(Image.open(io.BytesIO(fh.read())).convert("RGBA")).astype(np.float64)
+    bucket_rgb = bucket[:, :, :3]
+    top, bottom = bucket_rgb.max(axis=2), bucket_rgb.min(axis=2)
+    fluid = bucket_rgb[(bucket[:, :, 3] > 0) & (top - bottom > 30)]
+    tint = fluid.mean(axis=0)
+
+    base = load(zm, "assets/minecraft/textures/item/honey_bottle.png")
+    visible = base[:, :, 3] > 0
+    reference = luminance(base[:, :, :3])[visible].mean()
+    out = base.copy()
+    out[:, :, :3] = np.clip(tint[None, None, :]
+                            * (luminance(base[:, :, :3]) / reference)[:, :, None], 0, 255)
+    Image.fromarray(np.clip(np.rint(out), 0, 255).astype(np.uint8)).save(
+        os.path.join(item_dir, "candied_water_bottle.png"))
+    print("  candied water bottle: 1 icon (%d, %d, %d)" % tuple(int(v) for v in tint))
 
 
 def generate_resources():
@@ -482,6 +517,24 @@ def generate_resources():
                 "key": {"#": {"item": "aoa3:" + ingot_name}},
                 "result": {"item": "aoaagriculture:" + metal_name + "_bucket"},
             })
+
+    # ---- the candied water bottle: a drink that hands the glass bottle back
+    write_json(os.path.join(ASSETS, "models", "item", "candied_water_bottle.json"), {
+        "parent": "item/generated",
+        "textures": {"layer0": "aoaagriculture:item/candied_water_bottle"},
+    })
+    en["item.aoaagriculture.candied_water_bottle"] = "Candied Water Bottle"
+    zh["item.aoaagriculture.candied_water_bottle"] = "糖水瓶"
+
+    # Vanilla's honey bottle becomes three sugar this way, with its glass bottle returned by the
+    # item's crafting remainder.
+    write_json(os.path.join(DATA, "aoaagriculture", "recipes",
+                            "sugar_from_candied_water_bottle.json"), {
+        "type": "minecraft:crafting_shapeless",
+        "group": "sugar",
+        "ingredients": [{"item": "aoaagriculture:candied_water_bottle"}],
+        "result": {"item": "minecraft:sugar", "count": 3},
+    })
 
     write_json(os.path.join(ASSETS, "lang", "en_us.json"), en)
     write_json(os.path.join(ASSETS, "lang", "zh_cn.json"), zh)

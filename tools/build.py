@@ -500,7 +500,38 @@ def verify_buckets(staging, remapped_dir):
         # AoA's candied water is registered after items, so this bucket resolves it lazily and has
         # to do the pour itself: vanilla's placement reads the eagerly-set fluid field.
         "CandiedWaterBucketItem.class": ("use", "emptyBucket", "getFluid"),
+        # A drink has to say how long it takes, what animation to play and what it sounds like,
+        # otherwise it is eaten like bread; and it has to hand the glass bottle back when drunk.
+        "CandiedWaterBottleItem.class": ("finishUsingItem", "getUseDuration", "getUseAnimation",
+                                         "getDrinkingSound", "getEatingSound"),
     }
+    # The bottle's properties have to do three things: make it food, make it stackable like a bottle,
+    # and return a glass bottle when it is used up in a recipe. Missing the last one turns "sugar from
+    # sugar water" into a recipe that quietly eats the bottle.
+    bottles_class = os.path.join(staging, "classes-mcp", "com", "posatasa", "aoaagriculture",
+                                 "registry", "Bottles.class")
+    with open(bottles_class, "rb") as fh:
+        bottles = remap.ClassFile(fh.read())
+    references = set()
+    for i in range(1, bottles.count):
+        entry = bottles.entries[i]
+        if entry is None or entry[0] not in (remap.CONSTANT_METHODREF,
+                                             remap.CONSTANT_INTERFACE_METHODREF):
+            continue
+        payload = entry[1]
+        owner = bottles.utf8(bottles.u2(bottles.entries[bottles.u2(payload)][1]))
+        member = bottles.utf8(bottles.u2(bottles.entries[bottles.u2(payload, 2)][1]))
+        references.add((owner, member))
+    for owner, member, why in (
+            ("net/minecraft/item/Item$Properties", "craftRemainder",
+             "crafting it into sugar would eat the glass bottle"),
+            ("net/minecraft/item/Food$Builder", "nutrition",
+             "it would not restore any hunger"),
+            ("net/minecraft/block/IBucketPickupHandler", "takeLiquid",
+             "a glass bottle could not be filled from it")):
+        if (owner, member) not in references:
+            problems.append("Bottles never calls %s.%s, so %s" % (owner, member, why))
+
     for filename, wanted in required_overrides.items():
         path = os.path.join(item_package, filename)
         with open(path, "rb") as fh:
@@ -794,6 +825,16 @@ def verify_resources(resources_dir, aoa_jar):
         for language, table in languages.items():
             if "item.aoaagriculture." + name not in table:
                 problems.append("%s: missing item name in %s" % (name, language))
+
+    # Items that are neither blocks nor buckets still need a model, a texture and a name. A missing
+    # model shows up in game as an invisible item, with nothing in any log.
+    for name in ("candied_water_bottle",):
+        for entry in ("models/item/%s.json" % name, "textures/item/%s.png" % name):
+            if entry not in ours:
+                problems.append("missing %s" % entry)
+        for language, table in languages.items():
+            if "item.aoaagriculture." + name not in table:
+                problems.append("%s: missing name for %s" % (language, name))
 
     # Both buckets that do more than a bucket must explain themselves, in every language.
     for name in ("water_shyre_bucket", "water_lunar_bucket", "emberstone_bucket",

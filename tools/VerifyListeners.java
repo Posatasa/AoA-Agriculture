@@ -18,6 +18,7 @@ public class VerifyListeners {
         String[] holders = {
                 "com.posatasa.aoaagriculture.registry.FarmlandBlocks",
                 "com.posatasa.aoaagriculture.registry.Buckets",
+                "com.posatasa.aoaagriculture.registry.Bottles",
         };
         int checked = 0;
         int failures = 0;

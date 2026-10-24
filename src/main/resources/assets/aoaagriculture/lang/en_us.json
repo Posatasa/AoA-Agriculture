@@ -44,5 +44,6 @@
   "item.aoaagriculture.emberstone_bucket": "Emberstone Bucket",
   "item.aoaagriculture.emberstone_bucket.tooltip": "Takes lava only - up to four buckets of it.",
   "item.aoaagriculture.lava_emberstone_bucket": "Emberstone Lava Bucket",
-  "item.aoaagriculture.lava_emberstone_bucket.tooltip": "Lava: %s / %s"
+  "item.aoaagriculture.lava_emberstone_bucket.tooltip": "Lava: %s / %s",
+  "item.aoaagriculture.candied_water_bottle": "Candied Water Bottle"
 }

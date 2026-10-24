@@ -18,11 +18,13 @@ import java.lang.reflect.Modifier;
 public class VerifyAgainstSrg {
     public static void main(String[] args) throws Exception {
         String[] names = {
-                "com.posatasa.aoaagriculture.AddonFarmland",
+                "com.posatasa.aoaagriculture.AoAAgriculture",
                 "com.posatasa.aoaagriculture.registry.FarmlandBlocks",
                 "com.posatasa.aoaagriculture.registry.Buckets",
                 "com.posatasa.aoaagriculture.item.AoABucketItem",
                 "com.posatasa.aoaagriculture.item.CandiedWaterBucketItem",
+                "com.posatasa.aoaagriculture.item.CandiedWaterBottleItem",
+                "com.posatasa.aoaagriculture.registry.Bottles",
                 "com.posatasa.aoaagriculture.item.InfiniteWaterBucketItem",
                 "com.posatasa.aoaagriculture.item.LunarWaterBucketItem",
                 "com.posatasa.aoaagriculture.item.EmberstoneBucketItem",
