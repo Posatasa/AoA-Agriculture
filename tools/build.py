@@ -531,6 +531,9 @@ def verify_buckets(staging, remapped_dir):
              "a glass bottle could not be filled from it")):
         if (owner, member) not in references:
             problems.append("Bottles never calls %s.%s, so %s" % (owner, member, why))
+    if ("net/minecraft/fluid/FluidState", "isSource") in references:
+        problems.append("Bottles gates on FluidState.isSource, which is false for AoA's fluid blocks "
+                        "because they are built from the flowing fluid - the fill would never happen")
 
     for filename, wanted in required_overrides.items():
         path = os.path.join(item_package, filename)

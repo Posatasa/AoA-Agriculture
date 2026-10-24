@@ -1,1 +1,1 @@
-043820ccbf7fbb6fa23e4261e2bf55261bcbb852372db404f0de76ad1d22f37b  aoaagriculture-1.2.21-beta.jar
+d3ccb7c6bd8a0df6fbb793d19c6f76ca7be055da6f08e4ab1c08b7b140dda4ed  aoaagriculture-1.2.22-beta.jar

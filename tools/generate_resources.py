@@ -360,10 +360,10 @@ def generate_bucket_icons(zm, za):
 
 
 def generate_bottle_icon(zm, za):
-    """The candied water bottle: vanilla's honey bottle, recoloured to AoA's candied water.
+    """The candied water bottle: vanilla's glass bottle with AoA's candied water in it.
 
-    The honey bottle is the closest vanilla thing to a sweet drink in a bottle, so it is also the
-    right shape; only its colour changes, and only its colour is taken from AoA - never a pixel.
+    Drawn the way vanilla draws a potion - glass bottle, plus the potion liquid layer tinted - so the
+    bottle itself stays glass. Only the colour is taken from AoA, never a pixel.
     """
     item_dir = os.path.join(ASSETS, "textures", "item")
     os.makedirs(item_dir, exist_ok=True)
@@ -382,12 +382,16 @@ def generate_bottle_icon(zm, za):
     fluid = bucket_rgb[(bucket[:, :, 3] > 0) & (top - bottom > 30)]
     tint = fluid.mean(axis=0)
 
-    base = load(zm, "assets/minecraft/textures/item/honey_bottle.png")
-    visible = base[:, :, 3] > 0
-    reference = luminance(base[:, :, :3])[visible].mean()
-    out = base.copy()
-    out[:, :, :3] = np.clip(tint[None, None, :]
-                            * (luminance(base[:, :, :3]) / reference)[:, :, None], 0, 255)
+    # The glass stays vanilla's glass bottle; only the liquid layer inside it is tinted, which is how
+    # vanilla draws a potion. Recolouring the whole icon would make the bottle itself pink.
+    glass = load(zm, "assets/minecraft/textures/item/glass_bottle.png")
+    liquid = load(zm, "assets/minecraft/textures/item/potion_overlay.png")
+    liquid_alpha = liquid[:, :, 3] / 255.0
+    liquid_shade = 0.35 + 0.65 * (luminance(liquid[:, :, :3]) / 255.0)
+    out = glass.copy()
+    out[:, :, :3] = (glass[:, :, :3] * (1.0 - liquid_alpha[:, :, None])
+                     + (tint[None, None, :] * liquid_shade[:, :, None]) * liquid_alpha[:, :, None])
+    out[:, :, 3] = np.maximum(glass[:, :, 3], liquid[:, :, 3])
     Image.fromarray(np.clip(np.rint(out), 0, 255).astype(np.uint8)).save(
         os.path.join(item_dir, "candied_water_bottle.png"))
     print("  candied water bottle: 1 icon (%d, %d, %d)" % tuple(int(v) for v in tint))

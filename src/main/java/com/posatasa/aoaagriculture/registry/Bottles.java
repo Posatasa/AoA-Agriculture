@@ -40,9 +40,14 @@ public final class Bottles {
     private static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, FarmlandBlocks.MOD_ID);
 
-    /** Six hunger and a little saturation: the same meal a honey bottle is. */
+    /**
+     * Six hunger and a little saturation, like a honey bottle - but drinkable at any time.
+     *
+     * <p>Honey is gated on being hungry; a bottle of drink is not, and gating it made the item look
+     * broken whenever the player was full.
+     */
     private static final Food CANDIED_WATER =
-            new Food.Builder().nutrition(6).saturationMod(0.1F).build();
+            new Food.Builder().nutrition(6).saturationMod(0.1F).alwaysEat().build();
 
     /**
      * Crafting it into sugar gives the bottle back. Vanilla does this with {@code craftRemainder},
@@ -77,7 +82,11 @@ public final class Bottles {
         World world = event.getWorld();
         BlockPos pos = event.getPos();
         FluidState fluidState = world.getFluidState(pos);
-        if (!fluidState.isSource() || !isCandiedWater(fluidState.getType())) {
+        // Deliberately not "is this a source block": AoA builds its fluid blocks from the FLOWING
+        // fluid, so their state reports itself as flowing even for a full block, and gating on that
+        // let this handler step aside and vanilla's bottle hand back a water bottle instead.
+        // takeLiquid below is the real test - it returns EMPTY unless the block is full.
+        if (!isCandiedWater(fluidState.getType())) {
             return;
         }
         BlockState state = world.getBlockState(pos);
