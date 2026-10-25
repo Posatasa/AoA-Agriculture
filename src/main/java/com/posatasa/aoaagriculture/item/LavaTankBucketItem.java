@@ -16,6 +16,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -32,40 +33,45 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * The Emberstone lava bucket: a tank that holds four buckets of lava.
+ * A bucket that holds several buckets of lava: Emberstone's holds four, Blazium's eight.
  *
- * <p>Looked at a lava source it fills, one bucket at a time, until it is full; anywhere else it
- * pours, one lava at a time, and becomes the empty Emberstone bucket when the last one goes. Water
- * and candied water are refused in both directions, so it can neither be filled with them nor spill
- * them.
+ * <p>Looked at a lava source it fills, one at a time, until it is full; anywhere else it pours, one
+ * at a time, and becomes its family's empty bucket when the last one goes. Water and candied water
+ * are refused in both directions.
  *
  * <p>How much is inside lives in the stack's NBT and is shown in the tooltip. It is not shown as a
- * durability bar: in 1.16.5 that is the only bar an item can draw, and it draws nothing when the
+ * durability bar: in 1.16.5 that is the only bar an item can draw, and it draws nothing while the
  * item is undamaged - so a full tank would have looked like an ordinary item.
  */
-public class EmberstoneLavaBucketItem extends AoABucketItem {
-    /** How many buckets of lava this holds. */
-    public static final int CAPACITY = 4;
+public class LavaTankBucketItem extends AoABucketItem {
     private static final String LAVA_TAG = "lava";
-    private static final String TOOLTIP = "item.aoaagriculture.lava_emberstone_bucket.tooltip";
 
-    public EmberstoneLavaBucketItem(Fluid content, Item.Properties properties, BucketFamily family) {
+    private final int capacity;
+
+    public LavaTankBucketItem(Fluid content, Item.Properties properties, BucketFamily family,
+                              int capacity) {
         super(content, properties, family);
+        this.capacity = capacity;
+    }
+
+    /** How many buckets of lava this tank holds. */
+    public int capacity() {
+        return capacity;
     }
 
     /** How much lava this stack holds. A stack without the tag is one full single bucket. */
-    public static int storedLava(ItemStack stack) {
+    public int storedLava(ItemStack stack) {
         CompoundNBT tag = stack.getTag();
         if (tag == null || !tag.contains(LAVA_TAG)) {
             return 1;
         }
-        return Math.max(0, Math.min(CAPACITY, tag.getInt(LAVA_TAG)));
+        return Math.max(0, Math.min(capacity, tag.getInt(LAVA_TAG)));
     }
 
     /** A copy of {@code stack} holding {@code lava}. */
-    public static ItemStack withLava(ItemStack stack, int lava) {
+    public ItemStack withLava(ItemStack stack, int lava) {
         ItemStack result = stack.copy();
-        result.getOrCreateTag().putInt(LAVA_TAG, lava);
+        result.getOrCreateTag().putInt(LAVA_TAG, Math.max(0, Math.min(capacity, lava)));
         return result;
     }
 
@@ -74,7 +80,7 @@ public class EmberstoneLavaBucketItem extends AoABucketItem {
         ItemStack stack = player.getItemInHand(hand);
         int stored = storedLava(stack);
 
-        if (stored < CAPACITY) {
+        if (stored < capacity) {
             ActionResult<ItemStack> toppedUp = topUp(world, player, hand, stored);
             if (toppedUp != null) {
                 return toppedUp;
@@ -139,10 +145,15 @@ public class EmberstoneLavaBucketItem extends AoABucketItem {
         return ActionResult.sidedSuccess(filled, world.isClientSide());
     }
 
+    /** "Lava: 3 / 8", looked up by this item's own name so each tank states its own capacity. */
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip,
                                ITooltipFlag flag) {
-        tooltip.add(new TranslationTextComponent(TOOLTIP, storedLava(stack), CAPACITY)
-                .withStyle(TextFormatting.GRAY));
+        ResourceLocation name = getRegistryName();
+        if (name != null) {
+            tooltip.add(new TranslationTextComponent(
+                    "item.aoaagriculture." + name.getPath() + ".tooltip", storedLava(stack), capacity)
+                    .withStyle(TextFormatting.GRAY));
+        }
     }
 }

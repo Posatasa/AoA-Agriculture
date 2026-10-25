@@ -2,9 +2,9 @@ package com.posatasa.aoaagriculture.registry;
 
 import com.posatasa.aoaagriculture.item.AoABucketItem;
 import com.posatasa.aoaagriculture.item.CandiedWaterBucketItem;
-import com.posatasa.aoaagriculture.item.EmberstoneBucketItem;
-import com.posatasa.aoaagriculture.item.EmberstoneLavaBucketItem;
-import com.posatasa.aoaagriculture.item.InfiniteWaterBucketItem;
+import com.posatasa.aoaagriculture.item.InfiniteBucketItem;
+import com.posatasa.aoaagriculture.item.LavaOnlyBucketItem;
+import com.posatasa.aoaagriculture.item.LavaTankBucketItem;
 import com.posatasa.aoaagriculture.item.LunarWaterBucketItem;
 import com.posatasa.aoaagriculture.item.BucketFamily;
 import net.minecraft.fluid.Fluid;
@@ -50,15 +50,21 @@ public final class Buckets {
     public static final BucketFamily LUNAR = new BucketFamily("lunar");
     /** Emberstone's bucket is a lava tank: four deep, and water is refused outright. */
     public static final BucketFamily EMBERSTONE = new BucketFamily("emberstone");
+    /** Blazium's bucket is the same tank, eight deep. */
+    public static final BucketFamily BLAZIUM = new BucketFamily("blazium");
+    /** Dark: endless lava, and the empty bucket a two-second hold leaves behind. */
+    public static final BucketFamily DARK = new BucketFamily("dark");
 
     private static Fluid candiedWater;
 
     public static void register(IEventBus modBus) {
         family(LIMONITE, AoABucketItem::new);
         family(ROSITE, AoABucketItem::new);
-        family(SHYRE, InfiniteWaterBucketItem::new);
+        family(SHYRE, InfiniteBucketItem::new);
         family(LUNAR, LunarWaterBucketItem::new);
         emberstone();
+        blazium();
+        dark();
         ITEMS.register(modBus);
         MinecraftForge.EVENT_BUS.addListener(Buckets::onFall);
     }
@@ -112,9 +118,28 @@ public final class Buckets {
      */
     private static void emberstone() {
         bind(EMBERSTONE, BucketFamily.Kind.EMPTY, "emberstone_bucket", () -> Fluids.EMPTY, 1,
-                EmberstoneBucketItem::new);
+                LavaOnlyBucketItem::new);
         bind(EMBERSTONE, BucketFamily.Kind.LAVA, "lava_emberstone_bucket", () -> Fluids.LAVA, 1,
-                EmberstoneLavaBucketItem::new);
+                (fluid, properties, family) -> new LavaTankBucketItem(fluid, properties, family, 4));
+    }
+
+    /** The same tank as Emberstone's, but eight deep. */
+    private static void blazium() {
+        bind(BLAZIUM, BucketFamily.Kind.EMPTY, "blazium_bucket", () -> Fluids.EMPTY, 1,
+                LavaOnlyBucketItem::new);
+        bind(BLAZIUM, BucketFamily.Kind.LAVA, "lava_blazium_bucket", () -> Fluids.LAVA, 1,
+                (fluid, properties, family) -> new LavaTankBucketItem(fluid, properties, family, 8));
+    }
+
+    /**
+     * The Dark family: the lava bucket is endless (hold it to empty it), and the empty one - which is
+     * what an upgrade kit and a two-second hold leave you with - fills back into it from lava.
+     */
+    private static void dark() {
+        bind(DARK, BucketFamily.Kind.EMPTY, "empty_dark_bucket", () -> Fluids.EMPTY, 1,
+                LavaOnlyBucketItem::new);
+        bind(DARK, BucketFamily.Kind.LAVA, "dark_bucket", () -> Fluids.LAVA, 1,
+                InfiniteBucketItem::new);
     }
 
     public static Fluid candiedWater() {

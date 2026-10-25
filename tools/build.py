@@ -483,20 +483,24 @@ def verify_buckets(staging, remapped_dir):
                                 "item")
     required_overrides = {
         "AoABucketItem.class": ("getEmptySuccessItem", "use"),
-        # The Shyre water bucket pours without using itself up, and empties on a long hold. That
-        # needs the use action started explicitly (use), the early-release pour (releaseUsing), the
+        # The endless bucket pours without using itself up, and empties on a long hold. That needs
+        # the use action started explicitly (use), the early-release pour (releaseUsing), the
         # completed-hold clear (finishUsingItem - a completed hold does NOT go through releaseUsing),
         # the hold length, and an animation to show for it.
-        "InfiniteWaterBucketItem.class": ("use", "releaseUsing", "finishUsingItem",
-                                          "getUseDuration", "getUseAnimation",
-                                          "appendHoverText"),
+        # The endless bucket: the hold, the pour, the clear, and the sound fix. playEmptySound is the
+        # one that went missing - vanilla passes the player as the sound's exception, which is right
+        # when both sides pour and silent when only the server does.
+        "InfiniteBucketItem.class": ("use", "releaseUsing", "finishUsingItem", "getUseDuration",
+                                     "getUseAnimation", "appendHoverText", "playEmptySound"),
         # The lunar water bucket does nothing different mechanically; the tooltip is how the player
         # is meant to learn what it does, so losing it would make the item look inert.
         "LunarWaterBucketItem.class": ("appendHoverText",),
         # The Emberstone tank cannot be a plain bucket: it must refuse everything but lava on both
         # paths, and it must override use to count what goes in and out.
-        "EmberstoneBucketItem.class": ("accepts", "filledFor", "appendHoverText"),
-        "EmberstoneLavaBucketItem.class": ("use", "appendHoverText"),
+        "LavaOnlyBucketItem.class": ("accepts", "filledFor", "appendHoverText"),
+        # A tank has to override use (to count what goes in and out) and know how deep it is.
+        "LavaTankBucketItem.class": ("use", "appendHoverText", "capacity", "storedLava",
+                                     "withLava"),
         # AoA's candied water is registered after items, so this bucket resolves it lazily and has
         # to do the pour itself: vanilla's placement reads the eagerly-set fluid field.
         "CandiedWaterBucketItem.class": ("use", "emptyBucket", "getFluid"),
@@ -870,7 +874,8 @@ def verify_resources(resources_dir, aoa_jar):
 
     # Both buckets that do more than a bucket must explain themselves, in every language.
     for name in ("water_shyre_bucket", "water_lunar_bucket", "emberstone_bucket",
-                 "lava_emberstone_bucket"):
+                 "lava_emberstone_bucket", "blazium_bucket", "lava_blazium_bucket",
+                 "dark_bucket", "empty_dark_bucket"):
         for language, table in languages.items():
             if "item.aoaagriculture.%s.tooltip" % name not in table:
                 problems.append("%s: missing tooltip for %s" % (language, name))

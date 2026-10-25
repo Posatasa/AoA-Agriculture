@@ -45,5 +45,13 @@
   "item.aoaagriculture.emberstone_bucket.tooltip": "Takes lava only - up to four buckets of it.",
   "item.aoaagriculture.lava_emberstone_bucket": "Emberstone Lava Bucket",
   "item.aoaagriculture.lava_emberstone_bucket.tooltip": "Lava: %s / %s",
+  "item.aoaagriculture.blazium_bucket": "Blazium Bucket",
+  "item.aoaagriculture.blazium_bucket.tooltip": "Takes lava only - up to eight buckets of it.",
+  "item.aoaagriculture.lava_blazium_bucket": "Blazium Lava Bucket",
+  "item.aoaagriculture.lava_blazium_bucket.tooltip": "Lava: %s / %s",
+  "item.aoaagriculture.dark_bucket": "Dark Bucket",
+  "item.aoaagriculture.dark_bucket.tooltip": "Pours without using up its lava - hold to empty.",
+  "item.aoaagriculture.empty_dark_bucket": "Empty Dark Bucket",
+  "item.aoaagriculture.empty_dark_bucket.tooltip": "Takes lava only.",
   "item.aoaagriculture.candied_water_bottle": "Candied Water Bottle"
 }

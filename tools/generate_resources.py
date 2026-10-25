@@ -58,6 +58,7 @@ COLONY_SOILS = ["aoa3:blackened_soil", "aoa3:fungal_dirt"]
 
 # Display names per bucket kind: English and Chinese, with the metal substituted in.
 BUCKET_NAMES = {
+    "empty_": ("Empty {} Bucket", "空{}桶"),
     "": ("{} Bucket", "{}桶"),
     "water_": ("{} Water Bucket", "{}水桶"),
     "lava_": ("{} Lava Bucket", "{}熔岩桶"),
@@ -69,6 +70,8 @@ METAL_NAMES = {
     "shyre": ("Shyre", "塞尔瑞"),
     "lunar": ("Lunar", "月锭"),
     "emberstone": ("Emberstone", "余烬"),
+    "blazium": ("Blazium", "烈焰"),
+    "dark": ("Dark", "暗黑"),
 }
 
 # Tooltips for the two buckets that do more than a bucket does. The keys are per item name, because
@@ -80,6 +83,18 @@ BUCKET_TOOLTIPS = {
     "water_lunar_bucket": (
         "Protects from fall damage while held.",
         "手持时免疫摔落伤害。"),
+    "empty_dark_bucket": (
+        "Takes lava only.",
+        "只装熔岩。"),
+    "dark_bucket": (
+        "Pours without using up its lava - hold to empty.",
+        "倒熔岩不会消耗；按住右键 2 秒清空。"),
+    "blazium_bucket": (
+        "Takes lava only - up to eight buckets of it.",
+        "只装熔岩，最多 8 桶。"),
+    "lava_blazium_bucket": (
+        "Lava: %s / %s",
+        "熔岩：%s / %s"),
     "emberstone_bucket": (
         "Takes lava only - up to four buckets of it.",
         "只装熔岩，最多 4 桶。"),
@@ -124,6 +139,10 @@ BUCKET_KINDS = (("", "bucket", False),
 # makes the two ends of the gradient obvious.
 EMBER_KINDS = (("", "bucket", False), ("lava_", "lava_bucket", False))
 
+# The Dark family is the opposite way round: its plain name is the endless filled bucket, and its
+# empty form is the one with a prefix.
+DARK_KINDS = (("", "lava_bucket", False), ("empty_", "bucket", False))
+
 BUCKET_METALS = (
     ("limonite", "limonite_ingot", (("limonite_ingot", 1.00),), BUCKET_KINDS),
     ("rosite", "rosite_ingot", (("rosite_ingot", 1.00),), BUCKET_KINDS),
@@ -135,6 +154,10 @@ BUCKET_METALS = (
     # emberstone texture - and is dropped well under the limonite bucket's brightness, because at
     # full brightness the two oranges read as the same metal.
     ("emberstone", "emberstone_ingot", (("emberstone_ore", 0.68),), EMBER_KINDS),
+    # Blazium's bucket is the same four-deep tank at eight, in the deep red of blazium blocks. Dark's is
+    # endless lava, drawn almost black - the colour of a dark upgrade kit without being invisible.
+    ("blazium", "blazium_ingot", (("blazium_block", 0.55),), EMBER_KINDS),
+    ("dark", "blazium_ingot", (("blazium_block", 0.25),), DARK_KINDS),
 )
 
 
@@ -499,6 +522,11 @@ def generate_resources():
                 en["item.aoaagriculture." + item_name + ".tooltip"] = tip_en
                 zh["item.aoaagriculture." + item_name + ".tooltip"] = tip_zh
 
+        # Dark has no crafting recipe of its own: it is made by using a dark upgrade kit on the
+        # Blazium lava bucket at a divine station, which is an AoA recipe type (see below).
+        if metal_name == "dark":
+            continue
+
         # The vanilla bucket recipe, in this metal's ingots - except Shyre, which takes three ingots
         # and a gem, so it is shapeless rather than forced into the bucket's three-slot shape.
         if metal_name == "shyre":
@@ -538,6 +566,17 @@ def generate_resources():
         "group": "sugar",
         "ingredients": [{"item": "aoaagriculture:candied_water_bottle"}],
         "result": {"item": "minecraft:sugar", "count": 3},
+    })
+
+    # The Dark bucket is an upgrade, not a recipe in a crafting grid: at AoA's divine station, a dark
+    # upgrade kit turns the Blazium lava bucket into it. That is AoA's own recipe type, so the station
+    # does the work and nothing here has to reimplement an altar.
+    write_json(os.path.join(DATA, "aoaagriculture", "recipes",
+                            "upgrade_lava_blazium_to_dark.json"), {
+        "type": "aoa3:upgrade_kit",
+        "input": {"item": "aoaagriculture:lava_blazium_bucket"},
+        "upgrade_kit": {"item": "aoa3:darkly_upgrade_kit"},
+        "result": {"item": "aoaagriculture:dark_bucket"},
     })
 
     write_json(os.path.join(ASSETS, "lang", "en_us.json"), en)

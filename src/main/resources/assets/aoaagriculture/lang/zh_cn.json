@@ -45,5 +45,13 @@
   "item.aoaagriculture.emberstone_bucket.tooltip": "只装熔岩，最多 4 桶。",
   "item.aoaagriculture.lava_emberstone_bucket": "余烬熔岩桶",
   "item.aoaagriculture.lava_emberstone_bucket.tooltip": "熔岩：%s / %s",
+  "item.aoaagriculture.blazium_bucket": "烈焰桶",
+  "item.aoaagriculture.blazium_bucket.tooltip": "只装熔岩，最多 8 桶。",
+  "item.aoaagriculture.lava_blazium_bucket": "烈焰熔岩桶",
+  "item.aoaagriculture.lava_blazium_bucket.tooltip": "熔岩：%s / %s",
+  "item.aoaagriculture.dark_bucket": "暗黑桶",
+  "item.aoaagriculture.dark_bucket.tooltip": "倒熔岩不会消耗；按住右键 2 秒清空。",
+  "item.aoaagriculture.empty_dark_bucket": "空暗黑桶",
+  "item.aoaagriculture.empty_dark_bucket.tooltip": "只装熔岩。",
   "item.aoaagriculture.candied_water_bottle": "糖水瓶"
 }
