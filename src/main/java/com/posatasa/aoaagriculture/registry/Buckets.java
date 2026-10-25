@@ -52,7 +52,7 @@ public final class Buckets {
     public static final BucketFamily EMBERSTONE = new BucketFamily("emberstone");
     /** Blazium's bucket is the same tank, eight deep. */
     public static final BucketFamily BLAZIUM = new BucketFamily("blazium");
-    /** Dark: endless lava, and the empty bucket a two-second hold leaves behind. */
+    /** Dark: an empty lava bucket, and an endless one its two-second hold falls back to. */
     public static final BucketFamily DARK = new BucketFamily("dark");
 
     private static Fluid candiedWater;
@@ -132,13 +132,13 @@ public final class Buckets {
     }
 
     /**
-     * The Dark family: the lava bucket is endless (hold it to empty it), and the empty one - which is
-     * what an upgrade kit and a two-second hold leave you with - fills back into it from lava.
+     * The Dark family, named like every other one: the plain name is the empty bucket - what the
+     * upgrade kit makes and the only form the recipe accepts - and its lava one is endless.
      */
     private static void dark() {
-        bind(DARK, BucketFamily.Kind.EMPTY, "empty_dark_bucket", () -> Fluids.EMPTY, 1,
+        bind(DARK, BucketFamily.Kind.EMPTY, "dark_bucket", () -> Fluids.EMPTY, 1,
                 LavaOnlyBucketItem::new);
-        bind(DARK, BucketFamily.Kind.LAVA, "dark_bucket", () -> Fluids.LAVA, 1,
+        bind(DARK, BucketFamily.Kind.LAVA, "lava_dark_bucket", () -> Fluids.LAVA, 1,
                 InfiniteBucketItem::new);
     }
 

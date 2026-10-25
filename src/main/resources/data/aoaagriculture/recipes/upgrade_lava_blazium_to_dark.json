@@ -1,7 +1,7 @@
 {
   "type": "aoa3:upgrade_kit",
   "input": {
-    "item": "aoaagriculture:lava_blazium_bucket"
+    "item": "aoaagriculture:blazium_bucket"
   },
   "upgrade_kit": {
     "item": "aoa3:darkly_upgrade_kit"

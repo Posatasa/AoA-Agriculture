@@ -50,8 +50,8 @@
   "item.aoaagriculture.lava_blazium_bucket": "Blazium Lava Bucket",
   "item.aoaagriculture.lava_blazium_bucket.tooltip": "Lava: %s / %s",
   "item.aoaagriculture.dark_bucket": "Dark Bucket",
-  "item.aoaagriculture.dark_bucket.tooltip": "Pours without using up its lava - hold to empty.",
-  "item.aoaagriculture.empty_dark_bucket": "Empty Dark Bucket",
-  "item.aoaagriculture.empty_dark_bucket.tooltip": "Takes lava only.",
+  "item.aoaagriculture.dark_bucket.tooltip": "Takes lava only.",
+  "item.aoaagriculture.lava_dark_bucket": "Dark Lava Bucket",
+  "item.aoaagriculture.lava_dark_bucket.tooltip": "Pours without using up its lava - hold to empty.",
   "item.aoaagriculture.candied_water_bottle": "Candied Water Bottle"
 }

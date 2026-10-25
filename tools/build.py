@@ -875,7 +875,7 @@ def verify_resources(resources_dir, aoa_jar):
     # Both buckets that do more than a bucket must explain themselves, in every language.
     for name in ("water_shyre_bucket", "water_lunar_bucket", "emberstone_bucket",
                  "lava_emberstone_bucket", "blazium_bucket", "lava_blazium_bucket",
-                 "dark_bucket", "empty_dark_bucket"):
+                 "dark_bucket", "lava_dark_bucket"):
         for language, table in languages.items():
             if "item.aoaagriculture.%s.tooltip" % name not in table:
                 problems.append("%s: missing tooltip for %s" % (language, name))
