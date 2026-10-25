@@ -156,7 +156,7 @@ BUCKET_METALS = (
     # the black of darkly powder - the item a dark upgrade kit is made from - brought to the bucket's
     # brightness so the shading survives.
     ("blazium", "blazium_ingot", (("blazium_block", 0.55),), EMBER_KINDS),
-    ("dark", "blazium_ingot", (("darkly_powder", 0.55),), DARK_KINDS),
+    ("dark", "blazium_ingot", (("darkly_powder", 0.20),), DARK_KINDS),
 )
 
 
