@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.DrinkHelper;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -171,6 +172,11 @@ public final class Bottles {
         Fluid candied = Buckets.candiedWater();
         return candied != Fluids.EMPTY
                 && BucketFamily.sourceOf(fluid) == BucketFamily.sourceOf(candied);
+    }
+
+    /** The bottle goes after the buckets, never in the middle of them. */
+    static void addToTab(NonNullList<ItemStack> items) {
+        items.add(new ItemStack(CANDIED_WATER_BOTTLE.get()));
     }
 
     private Bottles() {}

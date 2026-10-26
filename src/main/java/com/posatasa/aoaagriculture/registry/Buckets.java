@@ -11,6 +11,8 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -54,6 +56,17 @@ public final class Buckets {
     public static final BucketFamily BLAZIUM = new BucketFamily("blazium");
     /** Dark: an empty lava bucket, and an endless one its two-second hold falls back to. */
     public static final BucketFamily DARK = new BucketFamily("dark");
+
+    /**
+     * The order the creative tab shows the metals in: Limonite, Rosite, Emberstone, Blazium, Lunar,
+     * Shyre, Dark.
+     *
+     * <p>Written out because the registry's order is whichever item register happened to run first,
+     * which is no order anyone chose. Within a metal the buckets come in their own order - empty,
+     * water, lava, candied water - which is {@code Kind}'s declaration order.
+     */
+    private static final java.util.List<BucketFamily> TAB_ORDER = java.util.Arrays.asList(
+            LIMONITE, ROSITE, EMBERSTONE, BLAZIUM, LUNAR, SHYRE, DARK);
 
     private static Fluid candiedWater;
 
@@ -155,6 +168,18 @@ public final class Buckets {
             }
         }
         return candiedWater;
+    }
+
+    /** Adds this mod's buckets to the creative tab, in {@link #TAB_ORDER}. */
+    static void addToTab(NonNullList<ItemStack> items) {
+        for (BucketFamily family : TAB_ORDER) {
+            for (BucketFamily.Kind kind : BucketFamily.Kind.values()) {
+                Item item = family.item(kind);
+                if (item != null) {
+                    items.add(new ItemStack(item));
+                }
+            }
+        }
     }
 
     private Buckets() {}

@@ -165,12 +165,17 @@ def _resolve(classes, owner, predicate):
             continue
         seen.add(name)
         info = classes.get(name)
-        if info is not None and predicate(info):
-            return True
         if info is not None:
+            if predicate(info):
+                return True
             if info.super:
                 stack.append(info.super)
             stack.extend(info.interfaces)
+        elif not name.startswith(("net/minecraft/", "net/minecraftforge/")):
+            # The chain has left the Minecraft and Forge jars for a JDK or library supertype (this is
+            # how NonNullList inherits add() from ArrayList). Those members keep their names, so a
+            # reference through them is out of scope rather than unresolved.
+            return True
     return False
 
 

@@ -561,6 +561,19 @@ def verify_buckets(staging, remapped_dir):
         if "addListener(Bottles::%s)" % handler not in bottles_source:
             problems.append("Bottles defines %s but never registers it" % handler)
 
+    # The tab's order is written out by hand, so it is worth checking that both lists are still wired
+    # up: losing either call leaves a tab that is simply missing items, with no error anywhere.
+    with open(os.path.join(ROOT, "src", "main", "java", "com", "posatasa", "aoaagriculture",
+                           "registry", "FarmlandBlocks.java"), encoding="utf-8") as fh:
+        farmland_source = fh.read()
+    for call in ("Buckets.addToTab(items)", "Bottles.addToTab(items)"):
+        if call not in farmland_source:
+            problems.append("the creative tab never calls %s, so those items would be missing"
+                            % call)
+    if "fillItemList" not in farmland_source:
+        problems.append("the creative tab does not override fillItemList, so the order is the "
+                        "registry's again")
+
     if ("net/minecraft/block/IBucketPickupHandler", "takeLiquid") in references:
         problems.append("Bottles takes the fluid out of the world; candied water is an endless pool, "
                         "so bottling it must leave the block alone")

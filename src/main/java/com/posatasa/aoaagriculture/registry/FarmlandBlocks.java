@@ -15,6 +15,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.Direction;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -71,7 +72,41 @@ public final class FarmlandBlocks {
         public ItemStack makeIcon() {
             return new ItemStack(icon.get());
         }
+
+        /**
+         * A fixed order rather than the registry's: the blocks, then the buckets metal by metal, then
+         * the bottle. The registry order is whatever order the item registers happened to run in,
+         * which put the bottle in the middle of the buckets.
+         */
+        @Override
+        public void fillItemList(NonNullList<ItemStack> items) {
+            fillTab(items);
+        }
     };
+
+    /**
+     * Fills this mod's tab: each soil's farmland and its fertilised counterpart, then the buckets in
+     * the order the metals are listed, then the bottle - and afterwards anything else that names this
+     * tab, so an item added later cannot go missing by being left off a list here.
+     */
+    private static void fillTab(NonNullList<ItemStack> items) {
+        for (Soil soil : SOILS) {
+            items.add(new ItemStack(soil.block.get().asItem()));
+            items.add(new ItemStack(soil.fertilised.get().asItem()));
+        }
+        Buckets.addToTab(items);
+        Bottles.addToTab(items);
+
+        Set<Item> placed = new HashSet<>();
+        for (ItemStack stack : items) {
+            placed.add(stack.getItem());
+        }
+        for (Item item : ForgeRegistries.ITEMS) {
+            if (item.getItemCategory() == TAB && placed.add(item)) {
+                items.add(new ItemStack(item));
+            }
+        }
+    }
 
     private static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
