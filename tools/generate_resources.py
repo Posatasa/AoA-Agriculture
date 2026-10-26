@@ -537,18 +537,17 @@ def generate_resources():
         if metal_name == "dark":
             continue
 
-        # The vanilla bucket recipe, in this metal's ingots - except Shyre, which takes three ingots
-        # and a gem, so it is shapeless rather than forced into the bucket's three-slot shape.
+        # The vanilla bucket recipe, in this metal's ingots - except Shyre, which has its own shape:
+        # an empty top row, then the gem between two ingots, then one ingot centred underneath.
         if metal_name == "shyre":
             write_json(os.path.join(DATA, "aoaagriculture", "recipes",
                                     metal_name + "_bucket.json"), {
-                "type": "minecraft:crafting_shapeless",
-                "ingredients": [
-                    {"item": "aoa3:" + ingot_name},
-                    {"item": "aoa3:" + ingot_name},
-                    {"item": "aoa3:" + ingot_name},
-                    {"item": "aoa3:shyregem"},
-                ],
+                "type": "minecraft:crafting_shaped",
+                "pattern": ["   ", "SGS", " S "],
+                "key": {
+                    "S": {"item": "aoa3:" + ingot_name},
+                    "G": {"item": "aoa3:shyregem"},
+                },
                 "result": {"item": "aoaagriculture:" + metal_name + "_bucket"},
             })
         else:

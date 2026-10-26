@@ -1,19 +1,18 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    {
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "SGS",
+    " S "
+  ],
+  "key": {
+    "S": {
       "item": "aoa3:shyrestone_ingot"
     },
-    {
-      "item": "aoa3:shyrestone_ingot"
-    },
-    {
-      "item": "aoa3:shyrestone_ingot"
-    },
-    {
+    "G": {
       "item": "aoa3:shyregem"
     }
-  ],
+  },
   "result": {
     "item": "aoaagriculture:shyre_bucket"
   }
