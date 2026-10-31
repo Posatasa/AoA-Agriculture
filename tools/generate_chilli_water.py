@@ -58,7 +58,7 @@ METAL_ICONS = {
 def write_json(path, payload):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
-        json.dump(payload, fh, indent=2)
+        json.dump(payload, fh, indent=2, ensure_ascii=False)
         fh.write("\n")
 
 
