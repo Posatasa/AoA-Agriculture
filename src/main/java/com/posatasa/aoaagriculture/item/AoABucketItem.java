@@ -1,6 +1,11 @@
 package com.posatasa.aoaagriculture.item;
 
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CauldronBlock;
+import net.minecraft.block.ILiquidContainer;
+import net.minecraft.fluid.FlowingFluid;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IBucketPickupHandler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,6 +35,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -87,9 +93,83 @@ public class AoABucketItem extends BucketItem {
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        return getFluid() == Fluids.EMPTY
-                ? fill(world, player, hand)          // filling: vanilla's answer never reaches us
-                : super.use(world, player, hand);    // pouring: getEmptySuccessItem answers
+        if (getFluid() == Fluids.EMPTY) {
+            ActionResult<ItemStack> fromCauldron = takeFromCauldron(world, player, hand);
+            // filling: vanilla's answer never reaches us
+            return fromCauldron != null ? fromCauldron : fill(world, player, hand);
+        }
+        ActionResult<ItemStack> intoCauldron = pourIntoCauldron(world, player, hand);
+        // pouring: getEmptySuccessItem answers
+        return intoCauldron != null ? intoCauldron : super.use(world, player, hand);
+    }
+
+    // Vanilla's cauldron names its own water bucket by identity - `item == Items.WATER_BUCKET` - for
+    // both filling and emptying it, so a bucket of any other mod's is simply not part of either
+    // interaction. These two handle the cauldron itself, for the water bucket and the empty buckets
+    // of the families that have one.
+
+    /** Pours this bucket into a cauldron, if that is what is being clicked. Null when it is not. */
+    @Nullable
+    private ActionResult<ItemStack> pourIntoCauldron(World world, PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        BlockRayTraceResult hit = Item.getPlayerPOVHitResult(world, player,
+                RayTraceContext.FluidMode.NONE);
+        if (hit.getType() != RayTraceResult.Type.BLOCK) {
+            return null;
+        }
+        BlockPos pos = hit.getBlockPos();
+        BlockState state = world.getBlockState(pos);
+        if (!(state.getBlock() instanceof ILiquidContainer)) {
+            return null;
+        }
+        ILiquidContainer container = (ILiquidContainer) state.getBlock();
+        if (!container.canPlaceLiquid(world, pos, state, getFluid())) {
+            return null;                      // a cauldron takes water and nothing else
+        }
+        if (!world.mayInteract(player, pos)
+                || !player.mayUseItemAt(pos, hit.getDirection(), stack)
+                || !(getFluid() instanceof FlowingFluid)) {
+            return ActionResult.fail(stack);
+        }
+        if (!world.isClientSide) {
+            container.placeLiquid(world, pos, state,
+                    ((FlowingFluid) getFluid()).getSource(false));
+            world.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        }
+        Item empty = family.item(BucketFamily.Kind.EMPTY);
+        ItemStack result = player.abilities.instabuild || empty == null
+                ? stack : new ItemStack(empty);
+        return ActionResult.sidedSuccess(result, world.isClientSide);
+    }
+
+    /** Takes the water out of a full cauldron into this bucket. Null when that is not the click. */
+    @Nullable
+    private ActionResult<ItemStack> takeFromCauldron(World world, PlayerEntity player, Hand hand) {
+        Item water = family.item(BucketFamily.Kind.WATER);
+        if (water == null) {
+            return null;                      // the lava-only families have no water bucket
+        }
+        ItemStack stack = player.getItemInHand(hand);
+        BlockRayTraceResult hit = Item.getPlayerPOVHitResult(world, player,
+                RayTraceContext.FluidMode.NONE);
+        if (hit.getType() != RayTraceResult.Type.BLOCK) {
+            return null;
+        }
+        BlockPos pos = hit.getBlockPos();
+        BlockState state = world.getBlockState(pos);
+        if (!state.is(Blocks.CAULDRON) || state.getValue(CauldronBlock.LEVEL) < 3) {
+            return null;                      // vanilla only takes from a full cauldron
+        }
+        if (!world.mayInteract(player, pos)
+                || !player.mayUseItemAt(pos, hit.getDirection(), stack)) {
+            return ActionResult.fail(stack);
+        }
+        if (!world.isClientSide) {
+            world.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
+            world.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        }
+        ItemStack filled = player.abilities.instabuild ? stack : new ItemStack(water);
+        return ActionResult.sidedSuccess(filled, world.isClientSide);
     }
 
     /**

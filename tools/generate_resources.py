@@ -688,4 +688,8 @@ def generate_resources():
 if __name__ == "__main__":
     generate_textures()
     generate_resources()
+    # chilli water renders into the same directories, so it runs last
+    import generate_chilli_water
+    generate_chilli_water.main()
+
     print("done")

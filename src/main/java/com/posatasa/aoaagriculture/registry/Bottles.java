@@ -84,6 +84,12 @@ public final class Bottles {
     /** The path a click on a fluid takes. */
     @SubscribeEvent
     public static void onUseItem(PlayerInteractEvent.RightClickItem event) {
+        if (aimingAtChilliWater(event.getPlayer(), event.getWorld())) {
+            // Chilli water is bottled from a cauldron, never from the fluid, so this stops the click
+            // instead of leaving vanilla's bottle to make a water bottle of it.
+            event.setCanceled(true);
+            return;
+        }
         if (fill(event.getPlayer(), event.getWorld(), event.getHand(), event.getItemStack())) {
             event.setCanceled(true);
         }
@@ -92,11 +98,28 @@ public final class Bottles {
     /** The path a click that lands on a block takes. */
     @SubscribeEvent
     public static void onUseBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (aimingAtChilliWater(event.getPlayer(), event.getWorld())) {
+            event.setUseBlock(Event.Result.DENY);
+            event.setUseItem(Event.Result.DENY);
+            event.setCanceled(true);
+            return;
+        }
         if (fill(event.getPlayer(), event.getWorld(), event.getHand(), event.getItemStack())) {
             event.setUseBlock(Event.Result.DENY);
             event.setUseItem(Event.Result.DENY);
             event.setCanceled(true);
         }
+    }
+
+    /** Whether the player is looking at chilli water with a glass bottle in hand. */
+    private static boolean aimingAtChilliWater(PlayerEntity player, World world) {
+        if (player.getMainHandItem().getItem() != Items.GLASS_BOTTLE
+                && player.getOffhandItem().getItem() != Items.GLASS_BOTTLE) {
+            return false;
+        }
+        BlockRayTraceResult hit = aimedAt(player, world);
+        return hit != null && BucketFamily.sourceOf(world.getFluidState(hit.getBlockPos()).getType())
+                == BucketFamily.sourceOf(ChilliWater.still());
     }
 
     /**
@@ -118,8 +141,6 @@ public final class Bottles {
         // Deliberately not "is this a source block": AoA builds its fluid blocks from the FLOWING
         // fluid, so their state reports itself as flowing even for a full block. takeLiquid below is
         // the real test - it returns EMPTY unless the block is full.
-        // Candied water and chilli water are both in the water tag, so vanilla's bottle would take
-        // them for water; this runs first and bottles the right one instead.
         Item bottle = bottleFor(fluidState.getType());
         if (bottle == null) {
             return false;
@@ -167,7 +188,9 @@ public final class Bottles {
             return CANDIED_WATER_BOTTLE.get();
         }
         if (BucketFamily.sourceOf(fluid) == BucketFamily.sourceOf(ChilliWater.still())) {
-            return ChilliWater.BOTTLE.get();
+            // Chilli water is only bottled from a cauldron, so this is not a bottle at all: returning
+            // null here means the click is stopped instead of vanilla's bottle making water of it.
+            return null;
         }
         return null;
     }

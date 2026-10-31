@@ -3,7 +3,7 @@
 An add-on for [Advent of Ascension 3](https://github.com/Tslat/Advent-Of-Ascension) **1.16.5-3.6.11**.
 Extends AoA's farming, for a more casual way to play.
 
-**Download:** [`dist/aoaagriculture-1.2.32-beta.jar`](dist/aoaagriculture-1.2.32-beta.jar) - drop it in `mods/`.
+**Download:** [`dist/aoaagriculture-1.2.33-beta.jar`](dist/aoaagriculture-1.2.33-beta.jar) - drop it in `mods/`.
 
 ## Side: BOTH
 
