@@ -53,5 +53,10 @@
   "item.aoaagriculture.dark_bucket.tooltip": "只装熔岩。",
   "item.aoaagriculture.lava_dark_bucket": "暗黑熔岩桶",
   "item.aoaagriculture.lava_dark_bucket.tooltip": "倒熔岩不会消耗；按住右键 2 秒清空。",
+  "item.aoaagriculture.elecanium_bucket": "荧银桶",
+  "item.aoaagriculture.water_elecanium_bucket": "荧银水桶",
+  "item.aoaagriculture.water_elecanium_bucket.tooltip": "对着空气使用：消耗水，回满精神力。",
+  "item.aoaagriculture.lava_elecanium_bucket": "荧银熔岩桶",
+  "item.aoaagriculture.candied_water_elecanium_bucket": "荧银糖水桶",
   "item.aoaagriculture.candied_water_bottle": "糖水瓶"
 }

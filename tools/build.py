@@ -326,6 +326,21 @@ def verify_aoa_bridge(aoa_jar):
          "(Lnet/minecraft/entity/player/ServerPlayerEntity;" + skill + "FZ)V"),
     ]
 
+    # The Spirit bridge reaches these by name too; a typo there only means the Elecanium bucket
+    # silently stops refilling.
+    resource = "Lnet/tslat/aoa3/player/resource/AoAResource;"
+    instance = "Lnet/tslat/aoa3/player/resource/AoAResource$Instance;"
+    wanted += [
+        ("net/tslat/aoa3/common/registration/custom/AoAResources", "field", "SPIRIT",
+         "Lnet/minecraftforge/fml/RegistryObject;"),
+        ("net/tslat/aoa3/player/resource/AoAResource", "class", None, None),
+        ("net/tslat/aoa3/player/resource/AoAResource$Instance", "class", None, None),
+        ("net/tslat/aoa3/util/PlayerUtil", "method", "getResource",
+         "(Lnet/minecraft/entity/player/PlayerEntity;" + resource + ")" + instance),
+        ("net/tslat/aoa3/player/resource/AoAResource$Instance", "method", "getMaxValue", "()F"),
+        ("net/tslat/aoa3/player/resource/AoAResource$Instance", "method", "setValue", "(F)V"),
+    ]
+
     problems = []
     for owner, kind, name, descriptor in wanted:
         info = classes.get(owner)
@@ -337,10 +352,27 @@ def verify_aoa_bridge(aoa_jar):
         elif kind == "method" and descriptor not in info.methods.get(name, ()):
             problems.append("%s.%s%s is missing" % (owner, name, descriptor))
 
+    # And the names the bridges spell out have to be AoA's names. The list above checks the AoA jar
+    # against what this add-on expects; this checks the add-on's own string literals against it, so a
+    # typo in one of them cannot silently disable a bridge.
+    known = set()
+    for info in classes.values():
+        known.update(info.fields)
+        known.update(info.methods)
+    for relative in ("compat/AoASkillExperience.java", "compat/AoASpirit.java"):
+        source_path = os.path.join(ROOT, "src", "main", "java", "com", "posatasa",
+                                   "aoaagriculture", *relative.split("/"))
+        with open(source_path, encoding="utf-8") as fh:
+            source = fh.read()
+        for spelled in re.findall(r'(?:getField|getMethod)\("([^"]+)"', source):
+            if spelled not in known:
+                problems.append("%s reaches AoA member %r, which this AoA version does not have"
+                                % (relative, spelled))
+
     if problems:
-        raise SystemExit("the Farming experience bridge does not match this AoA version:\n  "
+        raise SystemExit("an AoA bridge does not match this AoA version:\n  "
                          + "\n  ".join(problems))
-    print("AoA skill API matches the Farming experience bridge (%d members)"
+    print("AoA skill and Spirit APIs match their bridges (%d members)"
           % len(wanted))
 
     verify_aoa_names(staging, aoa_jar)
@@ -504,6 +536,9 @@ def verify_buckets(staging, remapped_dir):
         # AoA's candied water is registered after items, so this bucket resolves it lazily and has
         # to do the pour itself: vanilla's placement reads the eagerly-set fluid field.
         "CandiedWaterBucketItem.class": ("use", "emptyBucket", "getFluid"),
+        # The Elecanium water bucket spends its water on the player instead of pouring it, and states
+        # that in its tooltip; losing use() turns it back into a plain bucket.
+        "ElecaniumWaterBucketItem.class": ("use", "appendHoverText"),
         # A drink has to say how long it takes, what animation to play and what it sounds like,
         # otherwise it is eaten like bread; and it has to hand the glass bottle back when drunk.
         "CandiedWaterBottleItem.class": ("finishUsingItem", "getUseDuration", "getUseAnimation",

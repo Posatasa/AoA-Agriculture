@@ -71,6 +71,7 @@ METAL_NAMES = {
     "emberstone": ("Emberstone", "余烬"),
     "blazium": ("Blazium", "烈焰"),
     "dark": ("Dark", "暗黑"),
+    "elecanium": ("Elecanium", "荧银"),
 }
 
 # Tooltips for the two buckets that do more than a bucket does. The keys are per item name, because
@@ -82,6 +83,9 @@ BUCKET_TOOLTIPS = {
     "water_lunar_bucket": (
         "Protects from fall damage while held.",
         "手持时免疫摔落伤害。"),
+    "water_elecanium_bucket": (
+        "Use it on nothing to spend the water and refill Spirit.",
+        "对着空气使用：消耗水，回满精神力。"),
     "dark_bucket": (
         "Takes lava only.",
         "只装熔岩。"),
@@ -141,6 +145,10 @@ EMBER_KINDS = (("", "bucket", False), ("lava_", "lava_bucket", False))
 # The Dark family is named the same way as the others: plain name empty, lava_ name filled.
 DARK_KINDS = EMBER_KINDS
 
+# Metals whose icon is two colours side by side: their bucket is painted the same way,
+# left half from the icon's left half and right half from its right half.
+HALVED_METALS = {"elecanium"}
+
 BUCKET_METALS = (
     ("limonite", "limonite_ingot", (("limonite_ingot", 1.00),), BUCKET_KINDS),
     ("rosite", "rosite_ingot", (("rosite_ingot", 1.00),), BUCKET_KINDS),
@@ -157,6 +165,9 @@ BUCKET_METALS = (
     # brightness so the shading survives.
     ("blazium", "blazium_ingot", (("blazium_block", 0.55),), EMBER_KINDS),
     ("dark", "blazium_ingot", (("darkly_powder", 0.20),), DARK_KINDS),
+    # Elecanium's ingot is half green and half blue, and its bucket keeps that split instead of
+    # blending the two into one colour (see HALVED_METALS).
+    ("elecanium", "elecanium_ingot", (("elecanium_ingot", 1.00),), BUCKET_KINDS),
 )
 
 
@@ -355,6 +366,29 @@ def generate_bucket_icons(zm, za):
         colour = icon[:, :, :3][visible].mean(axis=0)
         return colour * (target_lum / max(luminance(colour.reshape(1, 1, 3))[0, 0], 1e-6))
 
+    def colour_columns(icon_name):
+        """An icon's colours left and right of its middle, each at the bucket metal's brightness.
+
+        For icons that are not one colour: Elecanium's ingot is half green and half blue, and
+        averaging it would give a muddy teal that appears nowhere in AoA's own texture.
+        """
+        for folder in ("item", "block"):
+            path = "assets/aoa3/textures/%s/%s.png" % (folder, icon_name)
+            if path in aoa_entries:
+                icon = load(za, path)
+                break
+        else:
+            raise SystemExit("AoA has no texture for %s" % icon_name)
+        visible = icon[:, :, 3] > 0
+        middle = icon.shape[1] // 2
+        halves = []
+        for columns in (slice(0, middle), slice(middle, icon.shape[1])):
+            mask = visible[:, columns]
+            colour = icon[:, columns, :3][mask].mean(axis=0)
+            halves.append(colour * (target_lum
+                                    / max(luminance(colour.reshape(1, 1, 3))[0, 0], 1e-6)))
+        return halves
+
     def metal_map(base, stops):
         """The metal colour per pixel: one colour, or a top-to-bottom blend through the stops."""
         height, width = base.shape[:2]
@@ -368,17 +402,31 @@ def generate_bucket_icons(zm, za):
             out[row] = stops[low] * (1.0 - t) + stops[low + 1] * t
         return out
 
+    def halves_map(base, left, right):
+        """The metal colour per pixel for a metal that is two colours side by side."""
+        height, width = base.shape[:2]
+        out = np.zeros((height, width, 3))
+        middle = width // 2
+        out[:, :middle] = left
+        out[:, middle:] = right
+        return out
+
     for metal_name, ingot_name, colour_stops, kinds in BUCKET_METALS:
-        stops = [colour_of(icon) * scale for icon, scale in colour_stops]
+        if metal_name in HALVED_METALS:
+            stops = list(colour_columns(colour_stops[0][0]))
+        else:
+            stops = [colour_of(icon) * scale for icon, scale in colour_stops]
 
         for prefix, shape, tint_fluid in kinds:
             base = load(zm, "assets/minecraft/textures/item/%s.png" % shape)
-            image = recolour(base, metal_map(base, stops),
-                             candied_tint if tint_fluid else None)
+            picture = halves_map(base, stops[0], stops[1]) if metal_name in HALVED_METALS \
+                else metal_map(base, stops)
+            image = recolour(base, picture, candied_tint if tint_fluid else None)
             Image.fromarray(image).save(
                 os.path.join(item_dir, "%s%s_bucket.png" % (prefix, metal_name)))
         print("  %s: %d bucket icons%s" % (metal_name, len(kinds),
-                                           " (gradient)" if len(stops) > 1 else ""))
+                                           " (two colours)" if metal_name in HALVED_METALS
+                                           else (" (gradient)" if len(stops) > 1 else "")))
 
 
 def generate_bottle_icon(zm, za):

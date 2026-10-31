@@ -41,6 +41,7 @@ public class VerifyAgainstSrg {
                 "com.posatasa.aoaagriculture.loot.FertilisedFarmlandLootModifier",
                 "com.posatasa.aoaagriculture.loot.FertilisedFarmlandLootModifier$Serializer",
                 "com.posatasa.aoaagriculture.compat.AoASkillExperience",
+                "com.posatasa.aoaagriculture.compat.AoASpirit",
                 "com.posatasa.aoaagriculture.mixin.MixinMayPlaceOn",
                 "com.posatasa.aoaagriculture.mixin.MixinFertiliseFarmland",
                 "com.posatasa.aoaagriculture.mixin.MixinGreenManure",

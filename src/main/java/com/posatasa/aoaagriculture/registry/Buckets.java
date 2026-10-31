@@ -2,6 +2,7 @@ package com.posatasa.aoaagriculture.registry;
 
 import com.posatasa.aoaagriculture.item.AoABucketItem;
 import com.posatasa.aoaagriculture.item.CandiedWaterBucketItem;
+import com.posatasa.aoaagriculture.item.ElecaniumWaterBucketItem;
 import com.posatasa.aoaagriculture.item.InfiniteBucketItem;
 import com.posatasa.aoaagriculture.item.LavaOnlyBucketItem;
 import com.posatasa.aoaagriculture.item.LavaTankBucketItem;
@@ -56,17 +57,19 @@ public final class Buckets {
     public static final BucketFamily BLAZIUM = new BucketFamily("blazium");
     /** Dark: an empty lava bucket, and an endless one its two-second hold falls back to. */
     public static final BucketFamily DARK = new BucketFamily("dark");
+    /** Elecanium: its water bucket spends the water to refill Spirit. */
+    public static final BucketFamily ELECANIUM = new BucketFamily("elecanium");
 
     /**
-     * The order the creative tab shows the metals in: Limonite, Rosite, Emberstone, Blazium, Lunar,
-     * Shyre, Dark.
+     * The order the creative tab shows the metals in: Limonite, Rosite, Emberstone, Blazium,
+     * Elecanium, Lunar, Shyre, Dark.
      *
      * <p>Written out because the registry's order is whichever item register happened to run first,
      * which is no order anyone chose. Within a metal the buckets come in their own order - empty,
      * water, lava, candied water - which is {@code Kind}'s declaration order.
      */
     private static final java.util.List<BucketFamily> TAB_ORDER = java.util.Arrays.asList(
-            LIMONITE, ROSITE, EMBERSTONE, BLAZIUM, LUNAR, SHYRE, DARK);
+            LIMONITE, ROSITE, EMBERSTONE, BLAZIUM, ELECANIUM, LUNAR, SHYRE, DARK);
 
     private static Fluid candiedWater;
 
@@ -74,6 +77,7 @@ public final class Buckets {
         family(LIMONITE, AoABucketItem::new);
         family(ROSITE, AoABucketItem::new);
         family(SHYRE, InfiniteBucketItem::new);
+        family(ELECANIUM, ElecaniumWaterBucketItem::new);
         family(LUNAR, LunarWaterBucketItem::new);
         emberstone();
         blazium();

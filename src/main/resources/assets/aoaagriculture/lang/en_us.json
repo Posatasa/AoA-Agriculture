@@ -53,5 +53,10 @@
   "item.aoaagriculture.dark_bucket.tooltip": "Takes lava only.",
   "item.aoaagriculture.lava_dark_bucket": "Dark Lava Bucket",
   "item.aoaagriculture.lava_dark_bucket.tooltip": "Pours without using up its lava - hold to empty.",
+  "item.aoaagriculture.elecanium_bucket": "Elecanium Bucket",
+  "item.aoaagriculture.water_elecanium_bucket": "Elecanium Water Bucket",
+  "item.aoaagriculture.water_elecanium_bucket.tooltip": "Use it on nothing to spend the water and refill Spirit.",
+  "item.aoaagriculture.lava_elecanium_bucket": "Elecanium Lava Bucket",
+  "item.aoaagriculture.candied_water_elecanium_bucket": "Elecanium Candied Water Bucket",
   "item.aoaagriculture.candied_water_bottle": "Candied Water Bottle"
 }
