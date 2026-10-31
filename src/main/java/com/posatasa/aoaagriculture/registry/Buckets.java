@@ -13,6 +13,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -63,6 +64,11 @@ public final class Buckets {
     public static final BucketFamily ELECANIUM = new BucketFamily("elecanium");
     /** Varsium: its lava bucket spends the lava to refill Energy. */
     public static final BucketFamily VARSIUM = new BucketFamily("varsium");
+
+    /** The icon for the bucket tab: the first metal's empty bucket. */
+    static ItemStack iconStack() {
+        return new ItemStack(LIMONITE.item(BucketFamily.Kind.EMPTY));
+    }
 
     /**
      * The order the creative tab shows the metals in: Limonite, Rosite, Emberstone, Blazium,
@@ -118,7 +124,7 @@ public final class Buckets {
     private static void bind(BucketFamily family, BucketFamily.Kind kind, String name,
                              Supplier<Fluid> fluid, int stackSize, Factory factory) {
         RegistryObject<Item> item = ITEMS.register(name, () -> factory.create(fluid.get(),
-                new Item.Properties().tab(FarmlandBlocks.TAB).stacksTo(stackSize), family));
+                new Item.Properties().tab(Tabs.BUCKETS).stacksTo(stackSize), family));
         family.bind(kind, item);
     }
 
@@ -126,7 +132,7 @@ public final class Buckets {
     private static void bindLazy(BucketFamily family, BucketFamily.Kind kind, String name,
                                  Supplier<Fluid> fluid) {
         RegistryObject<Item> item = ITEMS.register(name, () -> new LazyFluidBucketItem(fluid,
-                new Item.Properties().tab(FarmlandBlocks.TAB).stacksTo(1), family));
+                new Item.Properties().tab(Tabs.BUCKETS).stacksTo(1), family));
         family.bind(kind, item);
     }
 
@@ -227,7 +233,7 @@ public final class Buckets {
                 Buckets::candiedWater, 1, AoABucketItem::new);
     }
 
-    /** Adds this mod's buckets to the creative tab, in {@link #TAB_ORDER}. */
+    /** Adds this mod's buckets to the bucket tab, in {@link #TAB_ORDER}. */
     static void addToTab(NonNullList<ItemStack> items) {
         for (BucketFamily family : TAB_ORDER) {
             for (BucketFamily.Kind kind : BucketFamily.Kind.values()) {
@@ -237,6 +243,13 @@ public final class Buckets {
                 }
             }
         }
+    }
+
+    /** The bucket tab: the buckets metal by metal, then the chilli water cauldron, then the rest. */
+    static void fillTab(NonNullList<ItemStack> items) {
+        addToTab(items);
+        items.add(new ItemStack(ChilliWater.CAULDRON_ITEM.get()));
+        Tabs.complete(Tabs.BUCKETS, items);
     }
 
     private Buckets() {}

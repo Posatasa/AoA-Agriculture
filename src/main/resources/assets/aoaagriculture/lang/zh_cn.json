@@ -1,6 +1,8 @@
 {
   "_comment": "\u7531 tools/generate_resources.py \u751f\u6210",
-  "itemGroup.aoaagriculture": "\u865a\u65e0\u4e16\u754c\u519c\u4e1a",
+  "itemGroup.aoaagriculture.farmland": "\u865a\u65e0\u4e16\u754c\u519c\u4e1a\uff1a\u8015\u5730",
+  "itemGroup.aoaagriculture.buckets": "\u865a\u65e0\u4e16\u754c\u519c\u4e1a\uff1a\u6876",
+  "itemGroup.aoaagriculture.food": "\u865a\u65e0\u4e16\u754c\u519c\u4e1a\uff1a\u98df\u6750",
   "block.aoaagriculture.aromatic_farmland": "\u82ac\u82b3\u8015\u5730",
   "block.aoaagriculture.aromatic_fertilised_farmland": "\u82ac\u82b3\u80a5\u6c83\u8015\u5730",
   "block.aoaagriculture.blackened_farmland": "\u6f06\u9ed1\u8015\u5730",

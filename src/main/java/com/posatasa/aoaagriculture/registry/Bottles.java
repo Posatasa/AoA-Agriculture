@@ -10,6 +10,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.stats.Stats;
@@ -70,10 +71,15 @@ public final class Bottles {
      */
     public static final RegistryObject<Item> CANDIED_WATER_BOTTLE = ITEMS.register(
             "candied_water_bottle", () -> new CandiedWaterBottleItem(new Item.Properties()
-                    .tab(FarmlandBlocks.TAB)
+                    .tab(Tabs.FOOD)
                     .stacksTo(16)
                     .craftRemainder(Items.GLASS_BOTTLE)
                     .food(CANDIED_WATER)));
+
+    /** The icon for the food tab: the first bottle this mod adds. */
+    static ItemStack iconStack() {
+        return new ItemStack(CANDIED_WATER_BOTTLE.get());
+    }
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
@@ -210,9 +216,11 @@ public final class Bottles {
                 && BucketFamily.sourceOf(fluid) == BucketFamily.sourceOf(candied);
     }
 
-    /** The bottle goes after the buckets, never in the middle of them. */
-    static void addToTab(NonNullList<ItemStack> items) {
+    /** The food tab: this mod's two bottles, then anything else that names it. */
+    static void fillTab(NonNullList<ItemStack> items) {
         items.add(new ItemStack(CANDIED_WATER_BOTTLE.get()));
+        items.add(new ItemStack(ChilliWater.BOTTLE.get()));
+        Tabs.complete(Tabs.FOOD, items);
     }
 
     private Bottles() {}

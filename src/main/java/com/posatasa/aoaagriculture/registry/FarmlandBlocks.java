@@ -7,6 +7,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.Blocks;
 import java.util.HashSet;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.Set;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
@@ -67,46 +69,24 @@ public final class FarmlandBlocks {
      * {@code new ItemGroup(label)} is registered with a spare index, and vanilla builds the
      * translation key as {@code itemGroup.<label>} - which is what the lang files provide.
      */
-    public static final ItemGroup TAB = new ItemGroup(MOD_ID) {
-        @Override
-        public ItemStack makeIcon() {
-            return new ItemStack(icon.get());
-        }
-
-        /**
-         * A fixed order rather than the registry's: the blocks, then the buckets metal by metal, then
-         * the bottle. The registry order is whatever order the item registers happened to run in,
-         * which put the bottle in the middle of the buckets.
-         */
-        @Override
-        public void fillItemList(NonNullList<ItemStack> items) {
-            fillTab(items);
-        }
-    };
+    /** The icon for the farmland tab: the first block this mod adds. */
+    static ItemStack iconStack() {
+        return new ItemStack(icon.get());
+    }
 
     /**
      * Fills this mod's tab: each soil's farmland and its fertilised counterpart, then the buckets in
      * the order the metals are listed, then the bottle - and afterwards anything else that names this
      * tab, so an item added later cannot go missing by being left off a list here.
      */
-    private static void fillTab(NonNullList<ItemStack> items) {
+    static void fillTab(NonNullList<ItemStack> items) {
         for (Soil soil : SOILS) {
             items.add(new ItemStack(soil.block.get().asItem()));
             items.add(new ItemStack(soil.fertilised.get().asItem()));
         }
-        Buckets.addToTab(items);
-        Bottles.addToTab(items);
-
-        Set<Item> placed = new HashSet<>();
-        for (ItemStack stack : items) {
-            placed.add(stack.getItem());
-        }
-        for (Item item : ForgeRegistries.ITEMS) {
-            if (item.getItemCategory() == TAB && placed.add(item)) {
-                items.add(new ItemStack(item));
-            }
-        }
     }
+
+
 
     private static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
@@ -233,13 +213,13 @@ public final class FarmlandBlocks {
         RegistryObject<Block> block = BLOCKS.register(name,
                 () -> new AoAFarmlandBlock(properties(), null));
         ITEMS.register(name, () -> new BlockItem(block.get(),
-                new Item.Properties().tab(TAB)));
+                new Item.Properties().tab(Tabs.FARMLAND)));
 
         String fertilisedName = name.replace("_farmland", "_fertilised_farmland");
         RegistryObject<Block> fertilised = BLOCKS.register(fertilisedName,
                 () -> new AoaFertilisedFarmlandBlock(properties(), null));
         ITEMS.register(fertilisedName, () -> new BlockItem(fertilised.get(),
-                new Item.Properties().tab(TAB)));
+                new Item.Properties().tab(Tabs.FARMLAND)));
 
         if (icon == null) {
             icon = block;

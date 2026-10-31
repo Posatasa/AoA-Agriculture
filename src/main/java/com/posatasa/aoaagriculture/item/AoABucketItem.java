@@ -119,21 +119,27 @@ public class AoABucketItem extends BucketItem {
         }
         BlockPos pos = hit.getBlockPos();
         BlockState state = world.getBlockState(pos);
-        if (!(state.getBlock() instanceof ILiquidContainer)) {
+        // A cauldron is not an ILiquidContainer: it carries its own level and its own setWaterLevel,
+        // which is why vanilla's bucket special-cases it instead. Only water fits one.
+        boolean cauldron = state.is(Blocks.CAULDRON)
+                && getFluid().is(FluidTags.WATER)
+                && state.getValue(CauldronBlock.LEVEL) < 3;
+        boolean containerBlock = state.getBlock() instanceof ILiquidContainer
+                && ((ILiquidContainer) state.getBlock()).canPlaceLiquid(world, pos, state, getFluid());
+        if (!cauldron && !containerBlock) {
             return null;
         }
-        ILiquidContainer container = (ILiquidContainer) state.getBlock();
-        if (!container.canPlaceLiquid(world, pos, state, getFluid())) {
-            return null;                      // a cauldron takes water and nothing else
-        }
         if (!world.mayInteract(player, pos)
-                || !player.mayUseItemAt(pos, hit.getDirection(), stack)
-                || !(getFluid() instanceof FlowingFluid)) {
+                || !player.mayUseItemAt(pos, hit.getDirection(), stack)) {
             return ActionResult.fail(stack);
         }
         if (!world.isClientSide) {
-            container.placeLiquid(world, pos, state,
-                    ((FlowingFluid) getFluid()).getSource(false));
+            if (cauldron) {
+                ((CauldronBlock) state.getBlock()).setWaterLevel(world, pos, state, 3);
+            } else if (getFluid() instanceof FlowingFluid) {
+                ((ILiquidContainer) state.getBlock()).placeLiquid(world, pos, state,
+                        ((FlowingFluid) getFluid()).getSource(false));
+            }
             world.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
         }
         Item empty = family.item(BucketFamily.Kind.EMPTY);

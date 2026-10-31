@@ -65,18 +65,18 @@ public final class ChilliWater {
     /** A vanilla bucket of chilli water; emptying it gives the vanilla bucket back. */
     public static final RegistryObject<Item> BUCKET = ITEMS.register("chilli_water_bucket",
             () -> new ChilliWaterBucketItem(new Item.Properties()
-                    .tab(FarmlandBlocks.TAB).stacksTo(1)));
+                    .tab(Tabs.BUCKETS).stacksTo(1)));
 
     /** The bottle: no hunger at all, and a second of fire. */
     public static final RegistryObject<Item> BOTTLE = ITEMS.register("chilli_water_bottle",
             () -> new ChilliWaterBottleItem(new Item.Properties()
-                    .tab(FarmlandBlocks.TAB)
+                    .tab(Tabs.FOOD)
                     .stacksTo(16)
                     .craftRemainder(Items.GLASS_BOTTLE)
                     .food(new Food.Builder().nutrition(0).saturationMod(0.0F).alwaysEat().build())));
 
     public static final RegistryObject<Item> CAULDRON_ITEM = ITEMS.register("chilli_water_cauldron",
-            () -> new BlockItem(CAULDRON.get(), new Item.Properties().tab(FarmlandBlocks.TAB)));
+            () -> new BlockItem(CAULDRON.get(), new Item.Properties().tab(Tabs.BUCKETS)));
 
     private static ForgeFlowingFluid.Properties properties() {
         return new ForgeFlowingFluid.Properties(STILL, FLOWING, FluidAttributes.builder(

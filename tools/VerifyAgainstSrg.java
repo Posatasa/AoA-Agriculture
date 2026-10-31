@@ -28,6 +28,7 @@ public class VerifyAgainstSrg {
                 "com.posatasa.aoaagriculture.block.ChilliWaterCauldronBlock",
                 "com.posatasa.aoaagriculture.fluid.ChilliWaterFluid",
                 "com.posatasa.aoaagriculture.registry.ChilliWater",
+                "com.posatasa.aoaagriculture.registry.Tabs",
                 "com.posatasa.aoaagriculture.util.LazyPour",
                 "com.posatasa.aoaagriculture.item.CandiedWaterBottleItem",
                 "com.posatasa.aoaagriculture.registry.Bottles",

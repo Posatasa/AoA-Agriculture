@@ -620,16 +620,29 @@ def verify_buckets(staging, remapped_dir):
 
     # The tab's order is written out by hand, so it is worth checking that both lists are still wired
     # up: losing either call leaves a tab that is simply missing items, with no error anywhere.
-    with open(os.path.join(ROOT, "src", "main", "java", "com", "posatasa", "aoaagriculture",
-                           "registry", "FarmlandBlocks.java"), encoding="utf-8") as fh:
-        farmland_source = fh.read()
-    for call in ("Buckets.addToTab(items)", "Bottles.addToTab(items)"):
-        if call not in farmland_source:
-            problems.append("the creative tab never calls %s, so those items would be missing"
-                            % call)
-    if "fillItemList" not in farmland_source:
-        problems.append("the creative tab does not override fillItemList, so the order is the "
-                        "registry's again")
+    registry_dir = os.path.join(ROOT, "src", "main", "java", "com", "posatasa", "aoaagriculture",
+                                "registry")
+
+    def registry_source(name):
+        with open(os.path.join(registry_dir, name), encoding="utf-8") as fh:
+            return fh.read()
+
+    tabs_source = registry_source("Tabs.java")
+    for tab in ("FARMLAND", "BUCKETS", "FOOD"):
+        if tab + " = group(" not in tabs_source:
+            problems.append("Tabs has no %s group, so one of the three creative tabs is missing"
+                            % tab)
+    if "fillItemList" not in tabs_source:
+        problems.append("the tabs do not override fillItemList, so their order is the registry's")
+    # Each tab's filler lives in the class that knows what belongs in it; losing one leaves that tab
+    # with only whatever the fallback finds.
+    for owner in ("FarmlandBlocks.java", "Buckets.java", "Bottles.java"):
+        source = registry_source(owner)
+        if "static void fillTab(" not in source:
+            problems.append("%s no longer fills its creative tab" % owner)
+        if "Tabs.complete(" not in source and owner != "FarmlandBlocks.java":
+            problems.append("%s does not finish its tab with Tabs.complete, so a later item could "
+                            "go missing from it" % owner)
 
     if ("net/minecraft/block/IBucketPickupHandler", "takeLiquid") in references:
         problems.append("Bottles takes the fluid out of the world; candied water is an endless pool, "
@@ -905,8 +918,9 @@ def verify_resources(resources_dir, aoa_jar):
     blocks = [e[len("blockstates/"):-len(".json")] for e in sorted(ours)
               if e.startswith("blockstates/")]
     for language, table in languages.items():
-        if "itemGroup.aoaagriculture" not in table:
-            problems.append("%s: missing itemGroup.aoaagriculture" % language)
+        for tab in ("farmland", "buckets", "food"):
+            if "itemGroup.aoaagriculture." + tab not in table:
+                problems.append("%s: missing itemGroup.aoaagriculture.%s" % (language, tab))
         for block in blocks:
             if "block.aoaagriculture." + block not in table:
                 problems.append("%s: missing name for %s" % (language, block))
