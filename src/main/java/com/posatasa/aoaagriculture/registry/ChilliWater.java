@@ -104,8 +104,8 @@ public final class ChilliWater {
 
     /** Whether this fluid state is chilli water, source or flowing. */
     public static boolean isChilliWater(FluidState state) {
-        Fluid fluid = STILL.get();
-        return fluid != null && state.getType() == fluid;
+        Fluid type = state.getType();
+        return type == STILL.get() || type == FLOWING.get();
     }
 
     public static void register(IEventBus modBus) {
