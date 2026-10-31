@@ -17,6 +17,9 @@ logs/
 private/
 libs/
 
+# Working notes for whoever is developing this, not part of the mod or its documentation.
+docs/STATE.md
+
 # Jars are ignored by default, with two exceptions:
 #   * the wrapper, without which nobody can build at all;
 #   * dist/, which holds the ready-to-use mod jar. Shipping the built jar is the whole
