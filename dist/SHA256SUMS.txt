@@ -1,1 +1,1 @@
-e1146cce2729b2b16b303c6c2bbebd9df663d310aa4e07f4909394c0c0b46144  aoaagriculture-1.3.0-beta.jar
+4db97732f3cbc5e12a5d8b4c32b652028e58cd29af83a38b46c3f80680fde974  aoaagriculture-1.3.1-beta.jar

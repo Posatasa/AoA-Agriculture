@@ -39,14 +39,13 @@ def main():
     models = os.path.join(ASSETS, "models", "item")
     os.makedirs(textures, exist_ok=True)
 
-    # The soup is the saturated part of the icon, and the bowl is the desaturated rest: keeping the
-    # vanilla bowl's own pixels is what makes these read as stew in a bowl rather than as a brown blob.
+    # Soup and bowl are both brown, so brightness is what separates them: the soup's pixels sit around
+    # 130 to 160, the bowl's around 30 to 75. Only the soup is recoloured, which keeps vanilla's bowl
+    # exactly as it is.
     rgb = stew[:, :, :3]
     alpha = stew[:, :, 3]
-    top, bottom = rgb.max(axis=2), rgb.min(axis=2)
-    saturation = np.where(top > 0, (top - bottom) / np.maximum(top, 1), 0)
-    soup = (alpha > 0) & (saturation >= 0.20)
     luminance = 0.2126 * rgb[:, :, 0] + 0.7152 * rgb[:, :, 1] + 0.0722 * rgb[:, :, 2]
+    soup = (alpha > 0) & (luminance >= 100.0)
     reference = luminance[soup].mean()
 
     for name, block, english, chinese, colour in SAUCES:
@@ -59,11 +58,12 @@ def main():
                    {"parent": "item/generated",
                     "textures": {"layer0": "aoaagriculture:item/" + name}})
 
-        # three blocks and a bowl in the crafting grid
+        # three blocks, a sugar on top and a bowl underneath, in the crafting grid
         write_json(os.path.join(DATA, "aoaagriculture", "recipes", name + ".json"), {
             "type": "minecraft:crafting_shaped",
-            "pattern": ["   ", "CCC", " B "],
+            "pattern": [" S ", "CCC", " B "],
             "key": {
+                "S": {"item": "minecraft:sugar"},
                 "C": {"item": block},
                 "B": {"item": "minecraft:bowl"},
             },
@@ -74,7 +74,7 @@ def main():
         write_json(os.path.join(DATA, "farmersdelight", "recipes", "cooking",
                                 name + ".json"), {
             "type": "farmersdelight:cooking",
-            "ingredients": [{"item": block}, {"item": block}],
+            "ingredients": [{"item": block}, {"item": block}, {"item": "minecraft:sugar"}],
             "result": {"item": "aoaagriculture:" + name},
             "container": {"item": "minecraft:bowl"},
             "cookingtime": 160,

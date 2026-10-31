@@ -5,10 +5,13 @@
     },
     "C": {
       "item": "aoa3:white_chocolate_block"
+    },
+    "S": {
+      "item": "minecraft:sugar"
     }
   },
   "pattern": [
-    "   ",
+    " S ",
     "CCC",
     " B "
   ],
