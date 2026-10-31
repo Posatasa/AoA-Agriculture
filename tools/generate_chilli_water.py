@@ -74,8 +74,10 @@ def tint_vanilla(path):
     luminance = 0.2126 * image[:, :, 0] + 0.7152 * image[:, :, 1] + 0.0722 * image[:, :, 2]
     reference = luminance[visible].mean() if visible.any() else 255.0
     out = image.copy()
+    # Proportional tint, exactly like tinting vanilla water: every pixel keeps its own brightness, so
+    # the texture keeps water's contrast instead of flattening into one solid colour.
     out[:, :, :3] = np.clip(np.array(COLOR)[None, None, :]
-                            * (0.55 + 0.45 * luminance / max(reference, 1e-6))[:, :, None], 0, 255)
+                            * (luminance / max(reference, 1e-6))[:, :, None], 0, 255)
     out[:, :, 3] = np.clip(image[:, :, 3] * OPACITY, 0, 255)
     return np.clip(np.rint(out), 0, 255).astype(np.uint8)
 
