@@ -467,6 +467,11 @@ def verify_buckets(staging, remapped_dir):
     so no code here should mention a vanilla bucket at all, and the two overrides that do the
     routing must be present.
     """
+    # The one exception, and it is deliberate: chilli water is this add-on's own fluid, and its plain
+    # bucket *is* the vanilla bucket's counterpart - a vanilla bucket fills with chilli water and
+    # empties back into a vanilla bucket. These two classes have to name it to do that.
+    IRON_IS_THE_ANSWER = {"ChilliWaterBucketItem.class", "Buckets.class"}
+
     VANILLA_BUCKETS = {
         "field_151133_ar": "minecraft:bucket",
         "field_151131_as": "minecraft:water_bucket",
@@ -489,7 +494,7 @@ def verify_buckets(staging, remapped_dir):
                 if owner != "net/minecraft/item/Items":
                     continue
                 member = cls.utf8(cls.u2(cls.entries[cls.u2(payload, 2)][1]))
-                if member in VANILLA_BUCKETS:
+                if member in VANILLA_BUCKETS and name not in IRON_IS_THE_ANSWER:
                     problems.append("%s names %s" % (name, VANILLA_BUCKETS[member]))
 
     # Picking a fluid up does not always hand back the fluid a bucket holds: FlowingFluidBlock
@@ -537,7 +542,13 @@ def verify_buckets(staging, remapped_dir):
                                      "withLava"),
         # AoA's candied water is registered after items, so this bucket resolves it lazily and has
         # to do the pour itself: vanilla's placement reads the eagerly-set fluid field.
-        "CandiedWaterBucketItem.class": ("use", "emptyBucket", "getFluid"),
+        "LazyFluidBucketItem.class": ("use", "emptyBucket", "getFluid"),
+        # Chilli water is this add-on's own fluid, registered after items like AoA's, so its bucket
+        # resolves the fluid on use and does its own pour; emptying it must give a vanilla bucket.
+        "ChilliWaterBucketItem.class": ("emptyBucket", "getEmptySuccessItem"),
+        # A drink that feeds nothing: it must still drink like a drink and give the bottle back.
+        "ChilliWaterBottleItem.class": ("finishUsingItem", "getUseDuration", "getUseAnimation",
+                                        "getDrinkingSound", "getEatingSound"),
         # The resource buckets spend their fluid on the player instead of pouring it, and say so
         # in their tooltips; losing use() turns them back into plain buckets.
         "ResourceRefillBucketItem.class": ("use", "appendHoverText"),
@@ -751,6 +762,13 @@ def verify_refmap(mappings, tsrg_path, srg_jar):
             ["net/minecraft/block/MushroomBlock"],
             "(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/server/ServerWorld;"
             "Lnet/minecraft/util/math/BlockPos;Ljava/util/Random;)V"),
+        # Chilli water's heat, on Entity: the tick it is applied in, and the extinguish it must skip.
+        "baseTick": (
+            ["net/minecraft/entity/Entity"],
+            "()V"),
+        "clearFire": (
+            ["net/minecraft/entity/Entity"],
+            "()V"),
     }
 
     srg = verify_refs.load_srg(srg_jar)
@@ -923,7 +941,11 @@ def verify_resources(resources_dir, aoa_jar):
 
     # Items that are neither blocks nor buckets still need a model, a texture and a name. A missing
     # model shows up in game as an invisible item, with nothing in any log.
-    for name in ("candied_water_bottle",):
+    for name in ("candied_water_bottle", "chilli_water_bucket", "chilli_water_bottle",
+                 "chilli_water_limonite_bucket",
+                 "chilli_water_rosite_bucket", "chilli_water_lunar_bucket",
+                 "chilli_water_shyre_bucket", "chilli_water_elecanium_bucket",
+                 "chilli_water_varsium_bucket"):
         for entry in ("models/item/%s.json" % name, "textures/item/%s.png" % name):
             if entry not in ours:
                 problems.append("missing %s" % entry)

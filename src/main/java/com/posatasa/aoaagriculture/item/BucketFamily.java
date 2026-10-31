@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public final class BucketFamily {
     /** The four buckets a metal has. */
-    public enum Kind { EMPTY, WATER, LAVA, CANDIED_WATER }
+    public enum Kind { EMPTY, WATER, LAVA, CANDIED_WATER, CHILLI_WATER }
 
     private final String metal;
     private final Map<Kind, RegistryObject<Item>> items = new EnumMap<>(Kind.class);

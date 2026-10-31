@@ -17,6 +17,10 @@
     },
     "com/posatasa/aoaagriculture/mixin/MixinPetalCraftingStation": {
       "use": "func_225533_a_"
+    },
+    "com/posatasa/aoaagriculture/mixin/MixinEntityChilliWater": {
+      "baseTick": "func_70030_z",
+      "clearFire": "func_70066_B"
     }
   },
   "data": {
@@ -38,6 +42,10 @@
       },
       "com/posatasa/aoaagriculture/mixin/MixinPetalCraftingStation": {
         "use": "func_225533_a_"
+      },
+      "com/posatasa/aoaagriculture/mixin/MixinEntityChilliWater": {
+        "baseTick": "func_70030_z",
+        "clearFire": "func_70066_B"
       }
     },
     "named": {
@@ -58,6 +66,10 @@
       },
       "com/posatasa/aoaagriculture/mixin/MixinPetalCraftingStation": {
         "use": "use"
+      },
+      "com/posatasa/aoaagriculture/mixin/MixinEntityChilliWater": {
+        "baseTick": "func_70030_z",
+        "clearFire": "func_70066_B"
       }
     }
   }

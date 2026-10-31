@@ -28,22 +28,22 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
- * A bucket holding AoA's candied water.
+ * A bucket whose fluid is registered after items: AoA's candied water, and this add-on's chilli water.
  *
  * <p>It cannot be an ordinary {@code BucketItem}, for a reason that is easy to miss: Forge registers
- * fluids <em>after</em> items, so when these buckets are created AoA's candied water is not in the
- * registry yet. Vanilla's bucket keeps its fluid in a field that it fills at construction time, and
- * both its fill and its pour read that field - so a bucket built then would either take the wrong
- * branch or refuse to pour at all.
+ * fluids <em>after</em> items, so when these buckets are created the fluid is not in the registry
+ * yet. Vanilla's bucket keeps its fluid in a field that it fills at construction time, and both its
+ * fill and its pour read that field - so a bucket built then would either take the wrong branch or
+ * refuse to pour at all.
  *
  * <p>Hence the fluid is supplied lazily and the two steps that would read the field are done here,
  * mirroring {@code BucketItem}'s own logic with {@link #getFluid()} in its place. Filling still goes
  * through {@code AoABucketItem#fill}, which never looked at the field.
  */
-public class CandiedWaterBucketItem extends AoABucketItem {
-    public CandiedWaterBucketItem(Supplier<? extends Fluid> content,
-                                  Item.Properties properties,
-                                  BucketFamily family) {
+public class LazyFluidBucketItem extends AoABucketItem {
+    public LazyFluidBucketItem(Supplier<? extends Fluid> content,
+                               Item.Properties properties,
+                               BucketFamily family) {
         super(content, properties, family);
     }
 

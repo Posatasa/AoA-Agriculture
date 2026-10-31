@@ -11,7 +11,8 @@
     "MixinCropGrowth",
     "MixinMushroomColony",
     "MixinMushroomColonySurvive",
-    "MixinPetalCraftingStation"
+    "MixinPetalCraftingStation",
+    "MixinEntityChilliWater"
   ],
   "injectors": {
     "defaultRequire": 0,

@@ -118,7 +118,10 @@ public final class Bottles {
         // Deliberately not "is this a source block": AoA builds its fluid blocks from the FLOWING
         // fluid, so their state reports itself as flowing even for a full block. takeLiquid below is
         // the real test - it returns EMPTY unless the block is full.
-        if (!isCandiedWater(fluidState.getType())) {
+        // Candied water and chilli water are both in the water tag, so vanilla's bottle would take
+        // them for water; this runs first and bottles the right one instead.
+        Item bottle = bottleFor(fluidState.getType());
+        if (bottle == null) {
             return false;
         }
         BlockState state = world.getBlockState(pos);
@@ -133,8 +136,7 @@ public final class Bottles {
 
         player.awardStat(Stats.ITEM_USED.get(Items.GLASS_BOTTLE));
         world.playSound(player, pos, SoundEvents.BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
-        ItemStack filled = DrinkHelper.createFilledResult(stack, player,
-                new ItemStack(CANDIED_WATER_BOTTLE.get()));
+        ItemStack filled = DrinkHelper.createFilledResult(stack, player, new ItemStack(bottle));
         player.setItemInHand(hand, filled);
         return true;
     }
@@ -157,6 +159,17 @@ public final class Bottles {
     private static boolean isFullSource(BlockState state) {
         return state.hasProperty(FlowingFluidBlock.LEVEL)
                 && state.getValue(FlowingFluidBlock.LEVEL) == 0;
+    }
+
+    /** The bottle this fluid fills, or null when it is not one of the two this mod bottles. */
+    private static Item bottleFor(Fluid fluid) {
+        if (isCandiedWater(fluid)) {
+            return CANDIED_WATER_BOTTLE.get();
+        }
+        if (BucketFamily.sourceOf(fluid) == BucketFamily.sourceOf(ChilliWater.still())) {
+            return ChilliWater.BOTTLE.get();
+        }
+        return null;
     }
 
     /**

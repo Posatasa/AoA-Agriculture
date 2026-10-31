@@ -63,5 +63,17 @@
   "item.aoaagriculture.lava_varsium_bucket": "Varsium Lava Bucket",
   "item.aoaagriculture.lava_varsium_bucket.tooltip": "Use it on nothing to spend the lava and refill Energy.",
   "item.aoaagriculture.candied_water_varsium_bucket": "Varsium Candied Water Bucket",
-  "item.aoaagriculture.candied_water_bottle": "Candied Water Bottle"
+  "item.aoaagriculture.candied_water_bottle": "Candied Water Bottle",
+  "block.aoaagriculture.chilli_water": "Chilli Water",
+  "block.aoaagriculture.chilli_water_cauldron": "Chilli Water Cauldron",
+  "item.aoaagriculture.chilli_water_bucket": "Chilli Water Bucket",
+  "item.aoaagriculture.chilli_water_bottle": "Chilli Water Bottle",
+  "item.aoaagriculture.chilli_water_bottle.tooltip": "No food in it, and it sets you alight.",
+  "message.aoaagriculture.chilli_water.not_enough": "A cauldron of chilli water takes %s chillies.",
+  "item.aoaagriculture.chilli_water_limonite_bucket": "Chilli Water Limonite Bucket",
+  "item.aoaagriculture.chilli_water_rosite_bucket": "Chilli Water Rosite Bucket",
+  "item.aoaagriculture.chilli_water_lunar_bucket": "Chilli Water Lunar Bucket",
+  "item.aoaagriculture.chilli_water_shyre_bucket": "Chilli Water Shyre Bucket",
+  "item.aoaagriculture.chilli_water_elecanium_bucket": "Chilli Water Elecanium Bucket",
+  "item.aoaagriculture.chilli_water_varsium_bucket": "Chilli Water Varsium Bucket"
 }

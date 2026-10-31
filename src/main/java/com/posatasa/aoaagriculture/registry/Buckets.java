@@ -1,7 +1,7 @@
 package com.posatasa.aoaagriculture.registry;
 
 import com.posatasa.aoaagriculture.item.AoABucketItem;
-import com.posatasa.aoaagriculture.item.CandiedWaterBucketItem;
+import com.posatasa.aoaagriculture.item.LazyFluidBucketItem;
 import com.posatasa.aoaagriculture.compat.AoAResourceRefill;
 import com.posatasa.aoaagriculture.item.ResourceRefillBucketItem;
 import com.posatasa.aoaagriculture.item.InfiniteBucketItem;
@@ -26,6 +26,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
@@ -106,12 +107,12 @@ public final class Buckets {
                 waterFactory);
         bind(family, BucketFamily.Kind.LAVA, "lava_" + metal + "_bucket", () -> Fluids.LAVA, 1,
                 ordinary);
-        // Candied water is AoA's fluid, and fluids are registered after items, so this one is
-        // built around a lazily resolved fluid rather than a value.
-        RegistryObject<Item> candied = ITEMS.register("candied_water_" + metal + "_bucket",
-                () -> new CandiedWaterBucketItem(Buckets::candiedWater,
-                        new Item.Properties().tab(FarmlandBlocks.TAB).stacksTo(1), family));
-        family.bind(BucketFamily.Kind.CANDIED_WATER, candied);
+        // Candied water is AoA's fluid and chilli water is ours; both are registered after items, so
+        // these two are built around lazily resolved fluids rather than values.
+        bindLazy(family, BucketFamily.Kind.CANDIED_WATER,
+                "candied_water_" + metal + "_bucket", Buckets::candiedWater);
+        bindLazy(family, BucketFamily.Kind.CHILLI_WATER,
+                "chilli_water_" + metal + "_bucket", ChilliWater::still);
     }
 
     private static void bind(BucketFamily family, BucketFamily.Kind kind, String name,
@@ -119,6 +120,36 @@ public final class Buckets {
         RegistryObject<Item> item = ITEMS.register(name, () -> factory.create(fluid.get(),
                 new Item.Properties().tab(FarmlandBlocks.TAB).stacksTo(stackSize), family));
         family.bind(kind, item);
+    }
+
+    /** Registers a bucket whose fluid can only be resolved when it is used. */
+    private static void bindLazy(BucketFamily family, BucketFamily.Kind kind, String name,
+                                 Supplier<Fluid> fluid) {
+        RegistryObject<Item> item = ITEMS.register(name, () -> new LazyFluidBucketItem(fluid,
+                new Item.Properties().tab(FarmlandBlocks.TAB).stacksTo(1), family));
+        family.bind(kind, item);
+    }
+
+    /**
+     * The bucket that would hold chilli water, if {@code held} is a bucket that can: a vanilla bucket
+     * gets the plain one, and each of this mod's families its own - except the three lava-only ones,
+     * which refuse everything but lava. Null when the held item cannot hold chilli water.
+     */
+    @Nullable
+    public static ItemStack chilliWaterBucketFor(ItemStack held, PlayerEntity player) {
+        if (held.isEmpty()) {
+            return null;
+        }
+        if (held.getItem() == net.minecraft.item.Items.BUCKET) {
+            return new ItemStack(ChilliWater.BUCKET.get());
+        }
+        for (BucketFamily family : TAB_ORDER) {
+            if (family.item(BucketFamily.Kind.EMPTY) == held.getItem()) {
+                Item filled = family.item(BucketFamily.Kind.CHILLI_WATER);
+                return filled == null ? null : new ItemStack(filled);
+            }
+        }
+        return null;
     }
 
     /**

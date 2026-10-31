@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "aoaagriculture:item/chilli_water_lunar_bucket"
+  }
+}

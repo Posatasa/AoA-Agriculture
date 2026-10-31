@@ -2,6 +2,7 @@ package com.posatasa.aoaagriculture;
 
 import com.posatasa.aoaagriculture.registry.Bottles;
 import com.posatasa.aoaagriculture.registry.Buckets;
+import com.posatasa.aoaagriculture.registry.ChilliWater;
 import com.posatasa.aoaagriculture.registry.FarmlandBlocks;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -21,5 +22,6 @@ public class AoAAgriculture {
         FarmlandBlocks.register(bus);
         Buckets.register(bus);
         Bottles.register(bus);
+        ChilliWater.register(bus);
     }
 }
