@@ -1,6 +1,6 @@
 package com.posatasa.aoaagriculture.item;
 
-import com.posatasa.aoaagriculture.compat.AoASpirit;
+import com.posatasa.aoaagriculture.compat.AoAResourceRefill;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -24,22 +24,26 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * The Elecanium water bucket: an ordinary water bucket that can spend its water on the player.
+ * A filled bucket that can spend its fluid on the player: Elecanium's water buys Spirit, Varsium's
+ * lava buys Energy.
  *
- * <p>Used on nothing - right-clicked at the air, so there is nowhere to pour - the water is spent
- * instead: the bucket comes back empty, and the player's Spirit is refilled to its maximum. Nothing
- * else about it is unusual; over a block it pours water like any bucket.
+ * <p>Used on nothing - right-clicked at the air, so there is nowhere to pour - the fluid is spent
+ * instead: the bucket comes back empty, with the pour sound, and the resource goes back to its
+ * maximum. Over a block it pours like any bucket, so the fluid is what pays for it.
  *
- * <p>The water is what pays for it, which is why this is a bucket and not a free source of Spirit:
- * filling it again means finding water.
+ * <p>In creative nothing is spent: the bucket stays full, exactly as a vanilla bucket does when it
+ * pours, and the resource is still refilled.
  */
-public class ElecaniumWaterBucketItem extends AoABucketItem {
-    /** Pitch for spending the water, a touch above the pour so the two sound different. */
+public class ResourceRefillBucketItem extends AoABucketItem {
+    /** Pitch for spending the fluid, a touch above the pour so the two sound different. */
     private static final float SPEND_PITCH = 1.4F;
 
-    public ElecaniumWaterBucketItem(Fluid content, Item.Properties properties,
-                                    BucketFamily family) {
+    private final AoAResourceRefill.Kind resource;
+
+    public ResourceRefillBucketItem(Fluid content, Item.Properties properties, BucketFamily family,
+                                    AoAResourceRefill.Kind resource) {
         super(content, properties, family);
+        this.resource = resource;
     }
 
     @Override
@@ -57,12 +61,14 @@ public class ElecaniumWaterBucketItem extends AoABucketItem {
         }
         if (!world.isClientSide) {
             if (player instanceof ServerPlayerEntity) {
-                AoASpirit.refill((ServerPlayerEntity) player);
+                AoAResourceRefill.refill((ServerPlayerEntity) player, resource);
             }
             world.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.BUCKET_EMPTY, SoundCategory.PLAYERS, 1.0F, SPEND_PITCH);
         }
-        return ActionResult.sidedSuccess(new ItemStack(empty), world.isClientSide);
+        // Creative keeps the bucket full, the way a vanilla bucket does when it pours.
+        ItemStack result = player.abilities.instabuild ? stack : new ItemStack(empty);
+        return ActionResult.sidedSuccess(result, world.isClientSide);
     }
 
     /** The tooltip is looked up by this item's own name, like the other buckets that do more. */

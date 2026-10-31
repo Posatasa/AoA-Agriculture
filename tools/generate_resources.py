@@ -72,6 +72,7 @@ METAL_NAMES = {
     "blazium": ("Blazium", "烈焰"),
     "dark": ("Dark", "暗黑"),
     "elecanium": ("Elecanium", "荧银"),
+    "varsium": ("Varsium", "超金"),
 }
 
 # Tooltips for the two buckets that do more than a bucket does. The keys are per item name, because
@@ -83,6 +84,9 @@ BUCKET_TOOLTIPS = {
     "water_lunar_bucket": (
         "Protects from fall damage while held.",
         "手持时免疫摔落伤害。"),
+    "lava_varsium_bucket": (
+        "Use it on nothing to spend the lava and refill Energy.",
+        "对着空气使用：消耗熔岩，回满能量。"),
     "water_elecanium_bucket": (
         "Use it on nothing to spend the water and refill Spirit.",
         "对着空气使用：消耗水，回满精神力。"),
@@ -168,6 +172,8 @@ BUCKET_METALS = (
     # Elecanium's ingot is half green and half blue, and its bucket keeps that split instead of
     # blending the two into one colour (see HALVED_METALS).
     ("elecanium", "elecanium_ingot", (("elecanium_ingot", 1.00),), BUCKET_KINDS),
+    # Varsium, in the gold of its blocks rather than the browner ingot.
+    ("varsium", "varsium_ingot", (("varsium_block", 1.00),), BUCKET_KINDS),
 )
 
 

@@ -333,6 +333,8 @@ def verify_aoa_bridge(aoa_jar):
     wanted += [
         ("net/tslat/aoa3/common/registration/custom/AoAResources", "field", "SPIRIT",
          "Lnet/minecraftforge/fml/RegistryObject;"),
+        ("net/tslat/aoa3/common/registration/custom/AoAResources", "field", "ENERGY",
+         "Lnet/minecraftforge/fml/RegistryObject;"),
         ("net/tslat/aoa3/player/resource/AoAResource", "class", None, None),
         ("net/tslat/aoa3/player/resource/AoAResource$Instance", "class", None, None),
         ("net/tslat/aoa3/util/PlayerUtil", "method", "getResource",
@@ -359,7 +361,7 @@ def verify_aoa_bridge(aoa_jar):
     for info in classes.values():
         known.update(info.fields)
         known.update(info.methods)
-    for relative in ("compat/AoASkillExperience.java", "compat/AoASpirit.java"):
+    for relative in ("compat/AoASkillExperience.java", "compat/AoAResourceRefill.java"):
         source_path = os.path.join(ROOT, "src", "main", "java", "com", "posatasa",
                                    "aoaagriculture", *relative.split("/"))
         with open(source_path, encoding="utf-8") as fh:
@@ -536,9 +538,9 @@ def verify_buckets(staging, remapped_dir):
         # AoA's candied water is registered after items, so this bucket resolves it lazily and has
         # to do the pour itself: vanilla's placement reads the eagerly-set fluid field.
         "CandiedWaterBucketItem.class": ("use", "emptyBucket", "getFluid"),
-        # The Elecanium water bucket spends its water on the player instead of pouring it, and states
-        # that in its tooltip; losing use() turns it back into a plain bucket.
-        "ElecaniumWaterBucketItem.class": ("use", "appendHoverText"),
+        # The resource buckets spend their fluid on the player instead of pouring it, and say so
+        # in their tooltips; losing use() turns them back into plain buckets.
+        "ResourceRefillBucketItem.class": ("use", "appendHoverText"),
         # A drink has to say how long it takes, what animation to play and what it sounds like,
         # otherwise it is eaten like bread; and it has to hand the glass bottle back when drunk.
         "CandiedWaterBottleItem.class": ("finishUsingItem", "getUseDuration", "getUseAnimation",
@@ -592,6 +594,15 @@ def verify_buckets(staging, remapped_dir):
     with open(os.path.join(ROOT, "src", "main", "java", "com", "posatasa", "aoaagriculture",
                            "registry", "Bottles.java"), encoding="utf-8") as fh:
         bottles_source = fh.read()
+    # The resource buckets must not consume themselves in creative - the requested behaviour, and
+    # easy to lose when the spending path is edited.
+    with open(os.path.join(ROOT, "src", "main", "java", "com", "posatasa", "aoaagriculture",
+                           "item", "ResourceRefillBucketItem.java"), encoding="utf-8") as fh:
+        refill_source = fh.read()
+    if "instabuild" not in refill_source:
+        problems.append("ResourceRefillBucketItem does not check instabuild, so spending the fluid "
+                        "would empty the bucket in creative too")
+
     for handler in ("onUseItem", "onUseBlock"):
         if "addListener(Bottles::%s)" % handler not in bottles_source:
             problems.append("Bottles defines %s but never registers it" % handler)

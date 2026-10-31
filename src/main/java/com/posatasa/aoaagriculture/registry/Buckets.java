@@ -2,7 +2,8 @@ package com.posatasa.aoaagriculture.registry;
 
 import com.posatasa.aoaagriculture.item.AoABucketItem;
 import com.posatasa.aoaagriculture.item.CandiedWaterBucketItem;
-import com.posatasa.aoaagriculture.item.ElecaniumWaterBucketItem;
+import com.posatasa.aoaagriculture.compat.AoAResourceRefill;
+import com.posatasa.aoaagriculture.item.ResourceRefillBucketItem;
 import com.posatasa.aoaagriculture.item.InfiniteBucketItem;
 import com.posatasa.aoaagriculture.item.LavaOnlyBucketItem;
 import com.posatasa.aoaagriculture.item.LavaTankBucketItem;
@@ -59,6 +60,8 @@ public final class Buckets {
     public static final BucketFamily DARK = new BucketFamily("dark");
     /** Elecanium: its water bucket spends the water to refill Spirit. */
     public static final BucketFamily ELECANIUM = new BucketFamily("elecanium");
+    /** Varsium: its lava bucket spends the lava to refill Energy. */
+    public static final BucketFamily VARSIUM = new BucketFamily("varsium");
 
     /**
      * The order the creative tab shows the metals in: Limonite, Rosite, Emberstone, Blazium,
@@ -69,7 +72,7 @@ public final class Buckets {
      * water, lava, candied water - which is {@code Kind}'s declaration order.
      */
     private static final java.util.List<BucketFamily> TAB_ORDER = java.util.Arrays.asList(
-            LIMONITE, ROSITE, EMBERSTONE, BLAZIUM, ELECANIUM, LUNAR, SHYRE, DARK);
+            LIMONITE, ROSITE, EMBERSTONE, BLAZIUM, ELECANIUM, VARSIUM, LUNAR, SHYRE, DARK);
 
     private static Fluid candiedWater;
 
@@ -77,7 +80,10 @@ public final class Buckets {
         family(LIMONITE, AoABucketItem::new);
         family(ROSITE, AoABucketItem::new);
         family(SHYRE, InfiniteBucketItem::new);
-        family(ELECANIUM, ElecaniumWaterBucketItem::new);
+        family(ELECANIUM,
+                (fluid, properties, family) -> new ResourceRefillBucketItem(fluid, properties,
+                        family, AoAResourceRefill.Kind.SPIRIT));
+        varsium();
         family(LUNAR, LunarWaterBucketItem::new);
         emberstone();
         blazium();
@@ -172,6 +178,22 @@ public final class Buckets {
             }
         }
         return candiedWater;
+    }
+
+    /**
+     * The Varsium family: four ordinary buckets except the lava one, which spends its lava to refill
+     * Energy the same way Elecanium's water bucket refills Spirit.
+     */
+    private static void varsium() {
+        bind(VARSIUM, BucketFamily.Kind.EMPTY, "varsium_bucket", () -> Fluids.EMPTY, 16,
+                AoABucketItem::new);
+        bind(VARSIUM, BucketFamily.Kind.WATER, "water_varsium_bucket", () -> Fluids.WATER, 1,
+                AoABucketItem::new);
+        bind(VARSIUM, BucketFamily.Kind.LAVA, "lava_varsium_bucket", () -> Fluids.LAVA, 1,
+                (fluid, properties, family) -> new ResourceRefillBucketItem(fluid, properties,
+                        family, AoAResourceRefill.Kind.ENERGY));
+        bind(VARSIUM, BucketFamily.Kind.CANDIED_WATER, "candied_water_varsium_bucket",
+                Buckets::candiedWater, 1, AoABucketItem::new);
     }
 
     /** Adds this mod's buckets to the creative tab, in {@link #TAB_ORDER}. */

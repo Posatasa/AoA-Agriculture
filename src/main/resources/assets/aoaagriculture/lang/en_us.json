@@ -58,5 +58,10 @@
   "item.aoaagriculture.water_elecanium_bucket.tooltip": "Use it on nothing to spend the water and refill Spirit.",
   "item.aoaagriculture.lava_elecanium_bucket": "Elecanium Lava Bucket",
   "item.aoaagriculture.candied_water_elecanium_bucket": "Elecanium Candied Water Bucket",
+  "item.aoaagriculture.varsium_bucket": "Varsium Bucket",
+  "item.aoaagriculture.water_varsium_bucket": "Varsium Water Bucket",
+  "item.aoaagriculture.lava_varsium_bucket": "Varsium Lava Bucket",
+  "item.aoaagriculture.lava_varsium_bucket.tooltip": "Use it on nothing to spend the lava and refill Energy.",
+  "item.aoaagriculture.candied_water_varsium_bucket": "Varsium Candied Water Bucket",
   "item.aoaagriculture.candied_water_bottle": "Candied Water Bottle"
 }
