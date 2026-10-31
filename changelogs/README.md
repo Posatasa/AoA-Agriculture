@@ -2,6 +2,7 @@
 
 One file per release. Releases from 1.2 on are beta; the ones before that were alpha.
 
+- [1.2.42-beta](1.2.42-beta.md)
 - [1.2.41-beta](1.2.41-beta.md)
 - [1.2.40-beta](1.2.40-beta.md)
 - [1.2.39-beta](1.2.39-beta.md)
