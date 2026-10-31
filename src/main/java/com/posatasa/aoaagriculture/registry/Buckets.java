@@ -230,8 +230,8 @@ public final class Buckets {
         bind(VARSIUM, BucketFamily.Kind.LAVA, "lava_varsium_bucket", () -> Fluids.LAVA, 1,
                 (fluid, properties, family) -> new ResourceRefillBucketItem(fluid, properties,
                         family, AoAResourceRefill.Kind.ENERGY));
-        bind(VARSIUM, BucketFamily.Kind.CANDIED_WATER, "candied_water_varsium_bucket",
-                Buckets::candiedWater, 1, AoABucketItem::new);
+        bindLazy(VARSIUM, BucketFamily.Kind.CANDIED_WATER, "candied_water_varsium_bucket",
+                Buckets::candiedWater);
     }
 
     /** Adds this mod's buckets to the bucket tab, in {@link #TAB_ORDER}. */
@@ -246,8 +246,12 @@ public final class Buckets {
         }
     }
 
-    /** The bucket tab: the buckets metal by metal, then anything else that names it. */
+    /**
+     * The bucket tab: the plain chilli water bucket first - it is the one a vanilla bucket becomes -
+     * then the buckets metal by metal, then anything else that names the tab.
+     */
     static void fillTab(NonNullList<ItemStack> items) {
+        items.add(new ItemStack(ChilliWater.BUCKET.get()));
         addToTab(items);
         Tabs.complete(Tabs.BUCKETS, items);
     }

@@ -542,7 +542,10 @@ def verify_buckets(staging, remapped_dir):
                                      "withLava"),
         # AoA's candied water is registered after items, so this bucket resolves it lazily and has
         # to do the pour itself: vanilla's placement reads the eagerly-set fluid field.
-        "LazyFluidBucketItem.class": ("use", "emptyBucket", "getFluid"),
+        # The pour, its sound and the fluid are the three things vanilla's bucket would get wrong for a
+        # fluid that is resolved lazily; use() is deliberately vanilla's, because that is the path the
+        # chilli water bucket proved works.
+        "LazyFluidBucketItem.class": ("emptyBucket", "getFluid", "playEmptySound"),
         # Chilli water is this add-on's own fluid, registered after items like AoA's, so its bucket
         # resolves the fluid on use and does its own pour; emptying it must give a vanilla bucket.
         "ChilliWaterBucketItem.class": ("emptyBucket", "getEmptySuccessItem"),
