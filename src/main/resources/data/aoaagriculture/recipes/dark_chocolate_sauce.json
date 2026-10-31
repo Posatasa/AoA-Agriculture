@@ -1,0 +1,19 @@
+{
+  "key": {
+    "B": {
+      "item": "minecraft:bowl"
+    },
+    "C": {
+      "item": "aoa3:dark_chocolate_block"
+    }
+  },
+  "pattern": [
+    "   ",
+    "CCC",
+    " B "
+  ],
+  "result": {
+    "item": "aoaagriculture:dark_chocolate_sauce"
+  },
+  "type": "minecraft:crafting_shaped"
+}

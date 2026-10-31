@@ -29,6 +29,8 @@ public class VerifyAgainstSrg {
                 "com.posatasa.aoaagriculture.fluid.ChilliWaterFluid",
                 "com.posatasa.aoaagriculture.registry.ChilliWater",
                 "com.posatasa.aoaagriculture.registry.Tabs",
+                "com.posatasa.aoaagriculture.item.SauceItem",
+                "com.posatasa.aoaagriculture.registry.Sauces",
                 "com.posatasa.aoaagriculture.util.LazyPour",
                 "com.posatasa.aoaagriculture.item.CandiedWaterBottleItem",
                 "com.posatasa.aoaagriculture.registry.Bottles",

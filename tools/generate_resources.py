@@ -702,4 +702,7 @@ if __name__ == "__main__":
     import generate_chilli_water
     generate_chilli_water.main()
 
+    import generate_sauces
+    generate_sauces.main()
+
     print("done")

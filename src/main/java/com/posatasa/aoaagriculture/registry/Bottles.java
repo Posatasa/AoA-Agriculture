@@ -220,6 +220,9 @@ public final class Bottles {
     static void fillTab(NonNullList<ItemStack> items) {
         items.add(new ItemStack(CANDIED_WATER_BOTTLE.get()));
         items.add(new ItemStack(ChilliWater.BOTTLE.get()));
+        for (Item sauce : Sauces.all()) {
+            items.add(new ItemStack(sauce));
+        }
         Tabs.complete(Tabs.FOOD, items);
     }
 

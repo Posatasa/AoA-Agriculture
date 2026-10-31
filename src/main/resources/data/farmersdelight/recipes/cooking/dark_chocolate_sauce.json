@@ -1,0 +1,19 @@
+{
+  "container": {
+    "item": "minecraft:bowl"
+  },
+  "cookingtime": 160,
+  "experience": 0.35,
+  "ingredients": [
+    {
+      "item": "aoa3:dark_chocolate_block"
+    },
+    {
+      "item": "aoa3:dark_chocolate_block"
+    }
+  ],
+  "result": {
+    "item": "aoaagriculture:dark_chocolate_sauce"
+  },
+  "type": "farmersdelight:cooking"
+}
