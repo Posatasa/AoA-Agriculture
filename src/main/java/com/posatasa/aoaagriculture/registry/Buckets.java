@@ -208,10 +208,11 @@ public final class Buckets {
             if (candiedWater == null) {
                 // AoA is a hard dependency and the name is checked at build time, so this only
                 // happens on a version mismatch. Say so, and leave the bucket inert rather than
-                // crashing the registry.
+                // crashing the registry. The empty result is deliberately not cached: a later call
+                // retries, so a lookup made too early cannot poison every bucket for the session.
                 LOGGER.warn("AoA fluid {} is missing; the candied water buckets will do nothing",
                         CANDIED_WATER);
-                candiedWater = Fluids.EMPTY;
+                return Fluids.EMPTY;
             }
         }
         return candiedWater;
@@ -245,10 +246,9 @@ public final class Buckets {
         }
     }
 
-    /** The bucket tab: the buckets metal by metal, then the chilli water cauldron, then the rest. */
+    /** The bucket tab: the buckets metal by metal, then anything else that names it. */
     static void fillTab(NonNullList<ItemStack> items) {
         addToTab(items);
-        items.add(new ItemStack(ChilliWater.CAULDRON_ITEM.get()));
         Tabs.complete(Tabs.BUCKETS, items);
     }
 

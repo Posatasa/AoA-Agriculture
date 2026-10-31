@@ -25,6 +25,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.world.IWorld;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -41,6 +48,10 @@ import java.util.function.Supplier;
  * through {@code AoABucketItem#fill}, which never looked at the field.
  */
 public class LazyFluidBucketItem extends AoABucketItem {
+    private static final Logger LOGGER = LogManager.getLogger("aoaagriculture");
+    /** Items already reported as unable to resolve their fluid. */
+    private static final Set<ResourceLocation> REPORTED = ConcurrentHashMap.newKeySet();
+
     public LazyFluidBucketItem(Supplier<? extends Fluid> content,
                                Item.Properties properties,
                                BucketFamily family) {
@@ -57,8 +68,12 @@ public class LazyFluidBucketItem extends AoABucketItem {
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (getFluid() == Fluids.EMPTY) {
-            return fill(world, player, hand);
+        // This item is always a filled bucket - the empty one is a different item - so there is no
+        // branch on the fluid here. If it cannot be resolved there is simply nothing to pour, and
+        // saying so once is more useful than quietly behaving like an empty bucket.
+        if (!(getFluid() instanceof FlowingFluid)) {
+            warnOnce();
+            return ActionResult.fail(stack);
         }
 
         BlockRayTraceResult hit = Item.getPlayerPOVHitResult(world, player,
@@ -83,6 +98,30 @@ public class LazyFluidBucketItem extends AoABucketItem {
                 ? stack
                 : new ItemStack(family.item(BucketFamily.Kind.EMPTY));
         return ActionResult.sidedSuccess(emptied, world.isClientSide);
+    }
+
+    /**
+     * Vanilla's pour sound, taken from the fluid rather than from the field vanilla reads.
+     *
+     * <p>Without this the bucket throws a {@code NullPointerException} while playing the sound, after
+     * it has already placed the fluid - which is exactly the kind of half-done action that is hard to
+     * diagnose from the outside.
+     */
+    @Override
+    protected void playEmptySound(@Nullable PlayerEntity player, IWorld world, BlockPos pos) {
+        SoundEvent sound = getFluid().getAttributes().getEmptySound();
+        if (sound == null) {
+            sound = SoundEvents.BUCKET_EMPTY;
+        }
+        world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
+    }
+
+    /** Says once that this bucket's fluid could not be resolved, naming the item. */
+    private void warnOnce() {
+        ResourceLocation name = getRegistryName();
+        if (REPORTED.add(name)) {
+            LOGGER.warn("{}: its fluid is not in the registry, so it cannot pour anything", name);
+        }
     }
 
     /**

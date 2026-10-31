@@ -178,8 +178,6 @@ def main():
         glass = load("assets/minecraft/textures/item/glass_bottle.png")
         liquid = load("assets/minecraft/textures/item/potion_overlay.png")
 
-    write_json(os.path.join(items, "chilli_water_cauldron.json"),
-               {"parent": "aoaagriculture:block/chilli_water_cauldron"})
     write_json(os.path.join(items, "chilli_water_bucket.json"),
                {"parent": "item/generated",
                 "textures": {"layer0": "aoaagriculture:item/chilli_water_bucket"}})

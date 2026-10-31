@@ -70,6 +70,15 @@ public class ChilliWaterCauldronBlock extends Block {
         return SHAPE;
     }
 
+    /**
+     * Picking this block gives a vanilla cauldron: it has no item of its own, and a plain cauldron is
+     * what it was made from and what it turns back into when emptied.
+     */
+    @Override
+    public ItemStack getCloneItemStack(IBlockReader world, BlockPos pos, BlockState state) {
+        return new ItemStack(Blocks.CAULDRON);
+    }
+
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player,
                                 Hand hand, BlockRayTraceResult hit) {

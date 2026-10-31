@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -74,9 +73,6 @@ public final class ChilliWater {
                     .stacksTo(16)
                     .craftRemainder(Items.GLASS_BOTTLE)
                     .food(new Food.Builder().nutrition(0).saturationMod(0.0F).alwaysEat().build())));
-
-    public static final RegistryObject<Item> CAULDRON_ITEM = ITEMS.register("chilli_water_cauldron",
-            () -> new BlockItem(CAULDRON.get(), new Item.Properties().tab(Tabs.BUCKETS)));
 
     private static ForgeFlowingFluid.Properties properties() {
         return new ForgeFlowingFluid.Properties(STILL, FLOWING, FluidAttributes.builder(
