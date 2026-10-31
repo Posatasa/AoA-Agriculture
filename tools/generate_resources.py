@@ -648,8 +648,13 @@ def generate_resources():
         "result": {"item": "aoaagriculture:dark_bucket"},
     })
 
-    write_json(os.path.join(ASSETS, "lang", "en_us.json"), en)
-    write_json(os.path.join(ASSETS, "lang", "zh_cn.json"), zh)
+    # Language tables are written sorted, so the file reads as a dictionary rather than in whatever
+    # order the passes happened to add things.
+    for name, table in (("en_us.json", en), ("zh_cn.json", zh)):
+        with open(os.path.join(ASSETS, "lang", name), "w", encoding="utf-8",
+                  newline="\n") as fh:
+            json.dump(table, fh, indent=2, ensure_ascii=False, sort_keys=True)
+            fh.write("\n")
 
     # These blocks are dirt that happens to be tilled, so they join AoA's own dirt tag; the entry
     # list is deliberately explicit rather than "the forge:dirt tag" so it cannot go circular.

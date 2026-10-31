@@ -34,8 +34,13 @@ import net.minecraftforge.registries.ForgeRegistries;
  * one of these. One cauldron is a bucket, which is three bottles.
  */
 public final class ChilliWater {
-    /** A hot, saturated red with a little orange in it, so it reads as heat rather than as blood. */
-    public static final int COLOR = 0xFFD42A18;
+    /**
+     * White, so the renderer does not tint the texture a second time.
+     *
+     * <p>The still and flowing textures are already the chilli red; multiplying them by a red colour
+     * as well is what made the fluid look dark and opaque instead of like a red liquid.
+     */
+    public static final int COLOR = 0xFFFFFFFF;
     /** AoA's chilli, by registry name. */
     public static final String CHILLI = "aoa3:chilli";
     /** How many chillies one cauldron of water takes. */

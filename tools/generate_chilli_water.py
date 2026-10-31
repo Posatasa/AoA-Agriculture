@@ -18,7 +18,10 @@ VANILLA = (r"C:\Users\admin\.gradle\caches\forge_gradle\mcp_repo\de\oceanlabs\mc
            r"\1.16.5-20210115.111550\joined\downloadClient\client.jar")
 AOA = r"C:\Users\admin\curseforge\minecraft\Instances\Wuhui\mods\AoA3-1.16.5-3.6.11.jar"
 
-COLOR = (0xD4, 0x2A, 0x18)
+COLOR = (0xE8, 0x33, 0x24)
+# How much of the block underneath shows through. Vanilla water is about 0.7; chilli water is dropped
+# to 0.55 so it reads as a liquid rather than as a painted surface.
+OPACITY = 1.0
 
 NAMES = {
     "block.aoaagriculture.chilli_water": ("Chilli Water", "辣椒水"),
@@ -72,7 +75,8 @@ def tint_vanilla(path):
     reference = luminance[visible].mean() if visible.any() else 255.0
     out = image.copy()
     out[:, :, :3] = np.clip(np.array(COLOR)[None, None, :]
-                            * (luminance / max(reference, 1e-6))[:, :, None], 0, 255)
+                            * (0.55 + 0.45 * luminance / max(reference, 1e-6))[:, :, None], 0, 255)
+    out[:, :, 3] = np.clip(image[:, :, 3] * OPACITY, 0, 255)
     return np.clip(np.rint(out), 0, 255).astype(np.uint8)
 
 
@@ -226,7 +230,9 @@ def main():
             table = json.load(fh)
         for key, values in NAMES.items():
             table[key] = values[index]
-        write_json(path, table)
+        with open(path, "w", encoding="utf-8", newline="\n") as fh:
+            json.dump(table, fh, indent=2, ensure_ascii=False, sort_keys=True)
+            fh.write("\n")
 
     print("  chilli water: textures, blockstates, models, recipe, %d names" % len(NAMES))
 
