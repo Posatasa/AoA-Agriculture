@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cake_slice4",
+  "textures": {
+    "bottom": "aoaagriculture:block/honey_chocolate_cake_cake_bottom",
+    "side": "aoaagriculture:block/honey_chocolate_cake_cake_side",
+    "top": "aoaagriculture:block/honey_chocolate_cake_cake_top"
+  }
+}

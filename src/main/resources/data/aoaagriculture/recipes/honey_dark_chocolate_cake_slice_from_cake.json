@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoaagriculture:honey_dark_chocolate_cake"
+    }
+  ],
+  "result": {
+    "count": 7,
+    "item": "aoaagriculture:honey_dark_chocolate_cake_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

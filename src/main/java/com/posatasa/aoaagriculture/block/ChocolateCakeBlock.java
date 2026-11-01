@@ -14,21 +14,22 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 /**
- * A cake that eats like vanilla's but feeds twice as much.
+ * A cake that eats like vanilla's but feeds whatever it is told to.
  *
- * <p>The block itself is vanilla's: this extends {@link CakeBlock}, so the block states, the shape, the
- * bites and the way it is eaten are all inherited. The one thing that cannot be inherited is the amount,
+ * <p>The block itself is vanilla's: this extends {@link CakeBlock}, so the states, the shape, the bites
+ * and the way it is eaten are all inherited. The one thing that cannot be inherited is the amount,
  * because vanilla's {@code eat} is private and hardcodes two hunger and 0.1 saturation - so {@code use}
  * is reimplemented here with vanilla's own sequence and nothing changed but the numbers: refuse when the
  * player is full, count the slice, feed, then either take a bite off or remove the cake.
  */
 public class ChocolateCakeBlock extends CakeBlock {
-    /** Vanilla cake gives two hunger and 0.1 saturation a slice; these give twice that. */
-    private static final int HUNGER = 4;
-    private static final float SATURATION = 0.2F;
+    private final int hunger;
+    private final float saturation;
 
-    public ChocolateCakeBlock(AbstractBlock.Properties properties) {
+    public ChocolateCakeBlock(AbstractBlock.Properties properties, int hunger, float saturation) {
         super(properties);
+        this.hunger = hunger;
+        this.saturation = saturation;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class ChocolateCakeBlock extends CakeBlock {
             return ActionResultType.PASS;
         }
         player.awardStat(Stats.EAT_CAKE_SLICE);
-        player.getFoodData().eat(HUNGER, SATURATION);
+        player.getFoodData().eat(hunger, saturation);
         int bites = state.getValue(CakeBlock.BITES);
         if (bites < 6) {
             world.setBlock(pos, state.setValue(CakeBlock.BITES, bites + 1), 3);

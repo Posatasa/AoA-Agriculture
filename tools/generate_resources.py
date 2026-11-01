@@ -708,4 +708,7 @@ if __name__ == "__main__":
     import generate_cakes
     generate_cakes.main()
 
+    import generate_cake_family
+    generate_cake_family.main()
+
     print("done")

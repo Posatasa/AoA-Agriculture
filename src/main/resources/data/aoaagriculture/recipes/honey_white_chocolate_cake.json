@@ -1,0 +1,14 @@
+{
+  "ingredients": [
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "aoaagriculture:white_chocolate_cake"
+    }
+  ],
+  "result": {
+    "item": "aoaagriculture:honey_white_chocolate_cake"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

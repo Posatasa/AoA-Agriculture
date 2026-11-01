@@ -964,7 +964,12 @@ def verify_resources(resources_dir, aoa_jar):
                  "chilli_water_shyre_bucket", "chilli_water_elecanium_bucket",
                  "chilli_water_varsium_bucket", "chocolate_sauce",
                  "dark_chocolate_sauce", "white_chocolate_sauce", "chocolate_cake",
-                 "dark_chocolate_cake", "white_chocolate_cake"):
+                 "dark_chocolate_cake", "white_chocolate_cake", "honey_cake",
+                 "honey_chocolate_cake", "honey_dark_chocolate_cake",
+                 "honey_white_chocolate_cake", "cake_slice", "chocolate_cake_slice",
+                 "dark_chocolate_cake_slice", "white_chocolate_cake_slice", "honey_cake_slice",
+                 "honey_chocolate_cake_slice", "honey_dark_chocolate_cake_slice",
+                 "honey_white_chocolate_cake_slice"):
         for entry in ("models/item/%s.json" % name, "textures/item/%s.png" % name):
             if entry not in ours:
                 problems.append("missing %s" % entry)
