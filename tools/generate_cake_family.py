@@ -18,7 +18,7 @@ DATA = os.path.join(ROOT, "src", "main", "resources", "data")
 VANILLA = (r"C:\Users\admin\.gradle\caches\forge_gradle\mcp_repo\de\oceanlabs\mcp\mcp_config"
            r"\1.16.5-20210115.111550\joined\downloadClient\client.jar")
 
-HONEY = (232, 168, 46)
+HONEY = (222, 178, 104)
 
 # name, base cake's block textures prefix, English, Chinese
 HONEY_CAKES = (
@@ -66,7 +66,8 @@ def write_json(path, payload):
 def honeyed(image):
     """The cake with honey over it: colours pulled towards honey, alpha and shading kept."""
     out = image.copy()
-    out[:, :, :3] = np.clip(image[:, :, :3] * 0.30 + np.array(HONEY)[None, None, :] * 0.70, 0, 255)
+    # A glaze, not a coat of paint: the cake keeps most of its own colour and gains a warm honey tone.
+    out[:, :, :3] = np.clip(image[:, :, :3] * 0.62 + np.array(HONEY)[None, None, :] * 0.38, 0, 255)
     return out
 
 
