@@ -2,6 +2,7 @@
   "parent": "minecraft:block/cake_slice3",
   "textures": {
     "bottom": "aoaagriculture:block/honey_dark_chocolate_cake_cake_bottom",
+    "inside": "aoaagriculture:block/honey_dark_chocolate_cake_cake_inner",
     "side": "aoaagriculture:block/honey_dark_chocolate_cake_cake_side",
     "top": "aoaagriculture:block/honey_dark_chocolate_cake_cake_top"
   }

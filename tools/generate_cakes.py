@@ -62,28 +62,17 @@ def main():
 
     with zipfile.ZipFile(VANILLA) as jar:
         for name, sauce, english, chinese, colour in CAKES:
-            # textures: vanilla's cake parts, tinted
-            for part in PARTS:
-                source = "assets/minecraft/textures/block/%s.png" % part
-                if source not in jar.namelist():
-                    continue
-                pixels = tint(source, colour, jar)
-                target = "%s_%s.png" % (name, part)
-                Image.fromarray(pixels).save(os.path.join(block_textures, target))
-
             # models: vanilla's own cake models with our textures on top of them
             textures = {
                 "top": "aoaagriculture:block/%s_cake_top" % name,
                 "side": "aoaagriculture:block/%s_cake_side" % name,
                 "bottom": "aoaagriculture:block/%s_cake_bottom" % name,
+                "inside": "aoaagriculture:block/%s_cake_inner" % name,
             }
             for model in VANILLA_MODELS:
                 write_json(os.path.join(block_models, "%s_%s.json" % (name, model)),
                            {"parent": "minecraft:block/" + model, "textures": textures})
-            # The inventory icon is vanilla's own cake icon, tinted, rather than the block model: a cake
-            # in a slot should look like a cake icon, as vanilla's does.
-            icon = tint("assets/minecraft/textures/item/cake.png", colour, jar)
-            Image.fromarray(icon).save(os.path.join(item_textures, name + ".png"))
+            # the item model: the icon the sheet provides, named after the item
             write_json(os.path.join(item_models, name + ".json"),
                        {"parent": "item/generated",
                         "textures": {"layer0": "aoaagriculture:item/" + name}})
@@ -119,7 +108,7 @@ def main():
             json.dump(table, fh, indent=2, ensure_ascii=False, sort_keys=True)
             fh.write("\n")
 
-    print("  chocolate cakes: 3 textures each, an icon each, 7 models each, 3 recipes")
+    print("  chocolate cakes: 7 models each, 3 recipes (textures are hand-drawn)")
 
 
 if __name__ == "__main__":

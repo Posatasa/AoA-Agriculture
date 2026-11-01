@@ -7,6 +7,7 @@ wedge - the shape does the work, and the colours come from the cake itself.
 import io
 import json
 import os
+import shutil
 import zipfile
 
 import numpy as np
@@ -117,7 +118,27 @@ def load_icon(path, jar):
         return np.asarray(Image.open(io.BytesIO(fh.read())).convert("RGBA")).astype(float)
 
 
+def copy_art():
+    """Puts the hand-drawn textures in place.
+
+    They live in tools/art and are copied here rather than generated, because generate_resources.py
+    clears the texture directories before asking for anything to be drawn.
+    """
+    art = os.path.join(os.path.dirname(os.path.abspath(__file__)), "art")
+    copied = 0
+    for entry in sorted(os.listdir(art)):
+        if not entry.endswith(".png") or "__" not in entry:
+            continue
+        folder, name = entry.split("__", 1)
+        target = os.path.join(ASSETS, "textures", folder, name)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(os.path.join(art, entry), target)
+        copied += 1
+    print("  cake textures: %d hand-drawn files copied in" % copied)
+
+
 def main():
+    copy_art()
     blockstates = os.path.join(ASSETS, "blockstates")
     block_models = os.path.join(ASSETS, "models", "block")
     item_models = os.path.join(ASSETS, "models", "item")
@@ -126,54 +147,29 @@ def main():
 
     with zipfile.ZipFile(VANILLA) as jar:
         for name, base, english, chinese in HONEY_CAKES:
-            # block textures: the base cake's, honeyed
-            for part in PARTS:
-                source = ("assets/minecraft/textures/block/%s.png" % part if base is None
-                          else os.path.join(block_textures, "%s_%s.png" % (base, part)))
-                if base is None:
-                    with jar.open(source) as fh:
-                        image = np.asarray(Image.open(io.BytesIO(fh.read())).convert("RGBA"))
-                elif os.path.isfile(source):
-                    with open(source, "rb") as fh:
-                        image = np.asarray(Image.open(io.BytesIO(fh.read())).convert("RGBA"))
-                else:
-                    continue
-                Image.fromarray(np.clip(np.rint(honeyed(image.astype(float))), 0, 255)
-                                .astype(np.uint8)).save(
-                    os.path.join(block_textures, "%s_%s.png" % (name, part)))
-
             textures = {
                 "top": "aoaagriculture:block/%s_cake_top" % name,
                 "side": "aoaagriculture:block/%s_cake_side" % name,
                 "bottom": "aoaagriculture:block/%s_cake_bottom" % name,
+                "inside": "aoaagriculture:block/%s_cake_inner" % name,
             }
             for model in VANILLA_MODELS:
                 write_json(os.path.join(block_models, "%s_%s.json" % (name, model)),
                            {"parent": "minecraft:block/" + model, "textures": textures})
+            write_json(os.path.join(item_models, name + ".json"),
+                       {"parent": "item/generated",
+                        "textures": {"layer0": "aoaagriculture:item/" + name}})
             variants = {}
             for bites, model in enumerate(["cake"] + ["cake_slice%d" % i for i in range(1, 7)]):
                 variants["bites=%d" % bites] = {
                     "model": "aoaagriculture:block/%s_%s" % (name, model)}
             write_json(os.path.join(blockstates, name + ".json"), {"variants": variants})
 
-            # icon: the base cake's icon, honeyed
-            base_icon = os.path.join(item_textures, "%s.png" % base) if base else None
-            icon = honeyed(load_icon(base_icon, jar))
-            Image.fromarray(np.clip(np.rint(icon), 0, 255).astype(np.uint8)).save(
-                os.path.join(item_textures, name + ".png"))
-            write_json(os.path.join(item_models, name + ".json"),
-                       {"parent": "item/generated",
-                        "textures": {"layer0": "aoaagriculture:item/" + name}})
-
-        # slices: each cake's own icon cut to a wedge
-        for name, source, english, chinese in SLICES:
-            source_path = os.path.join(item_textures, "%s.png" % source) if source else None
-            image = wedge(load_icon(source_path, jar))
-            Image.fromarray(np.clip(np.rint(image), 0, 255).astype(np.uint8)).save(
-                os.path.join(item_textures, name + ".png"))
-            write_json(os.path.join(item_models, name + ".json"),
-                       {"parent": "item/generated",
-                        "textures": {"layer0": "aoaagriculture:item/" + name}})
+    # the slices' item models
+    for name, _source, _english, _chinese in SLICES:
+        write_json(os.path.join(item_models, name + ".json"),
+                   {"parent": "item/generated",
+                    "textures": {"layer0": "aoaagriculture:item/" + name}})
 
     # honey cakes: a bottle of honey over a cake, and the bottle comes back
     for name, base, english, chinese in HONEY_CAKES:
@@ -213,7 +209,7 @@ def main():
             json.dump(table, fh, indent=2, ensure_ascii=False, sort_keys=True)
             fh.write("\n")
 
-    print("  cake family: 4 honey cakes, 8 slices, 20 recipes")
+    print("  cake family: 4 honey cakes, 8 slices, 20 recipes (textures are hand-drawn)")
 
 
 if __name__ == "__main__":
