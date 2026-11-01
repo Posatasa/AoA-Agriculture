@@ -15,9 +15,9 @@ VANILLA = (r"C:\Users\admin\.gradle\caches\forge_gradle\mcp_repo\de\oceanlabs\mc
 
 # name, sauce item, English, Chinese, cake colour
 CAKES = (
-    ("chocolate_cake", "chocolate_sauce", "Chocolate Cake", "巧克力蛋糕", (168, 112, 72)),
+    ("chocolate_cake", "chocolate_sauce", "Chocolate Cake", "巧克力蛋糕", (142, 92, 58)),
     ("dark_chocolate_cake", "dark_chocolate_sauce", "Dark Chocolate Cake", "黑巧克力蛋糕",
-     (104, 66, 44)),
+     (84, 52, 32)),
     # Vanilla cake is white, so this one is a clear cream rather than another white.
     ("white_chocolate_cake", "white_chocolate_sauce", "White Chocolate Cake", "白巧克力蛋糕",
      (236, 214, 152)),
@@ -44,8 +44,10 @@ def tint(path, colour, jar):
     reference = luminance[visible].mean() if visible.any() else 255.0
     out = image.copy()
     # Proportional, like tinting water: the cake keeps its own shading and only changes colour.
-    out[:, :, :3] = np.clip(np.array(colour)[None, None, :]
-                            * (luminance / max(reference, 1e-6))[:, :, None], 0, 255)
+    # Clamped at one, so a bright pixel lands exactly on the colour instead of being pushed past it:
+    # the cake icon is mostly near-white, and scaling that up is what washed the colour out.
+    scale = np.minimum(luminance / max(reference, 1e-6), 1.0)
+    out[:, :, :3] = np.clip(np.array(colour)[None, None, :] * scale[:, :, None], 0, 255)
     return np.clip(np.rint(out), 0, 255).astype(np.uint8)
 
 
@@ -54,7 +56,9 @@ def main():
     block_models = os.path.join(ASSETS, "models", "block")
     item_models = os.path.join(ASSETS, "models", "item")
     block_textures = os.path.join(ASSETS, "textures", "block")
+    item_textures = os.path.join(ASSETS, "textures", "item")
     os.makedirs(block_textures, exist_ok=True)
+    os.makedirs(item_textures, exist_ok=True)
 
     with zipfile.ZipFile(VANILLA) as jar:
         for name, sauce, english, chinese, colour in CAKES:
@@ -76,8 +80,13 @@ def main():
             for model in VANILLA_MODELS:
                 write_json(os.path.join(block_models, "%s_%s.json" % (name, model)),
                            {"parent": "minecraft:block/" + model, "textures": textures})
+            # The inventory icon is vanilla's own cake icon, tinted, rather than the block model: a cake
+            # in a slot should look like a cake icon, as vanilla's does.
+            icon = tint("assets/minecraft/textures/item/cake.png", colour, jar)
+            Image.fromarray(icon).save(os.path.join(item_textures, name + ".png"))
             write_json(os.path.join(item_models, name + ".json"),
-                       {"parent": "aoaagriculture:block/%s_cake" % name})
+                       {"parent": "item/generated",
+                        "textures": {"layer0": "aoaagriculture:item/" + name}})
 
             # blockstate: vanilla's bites, one model each
             variants = {}
@@ -104,11 +113,13 @@ def main():
             table = json.load(fh)
         for name, _sauce, english, chinese, _colour in CAKES:
             table["block.aoaagriculture." + name] = (english, chinese)[index - 2]
+            # the item model is an icon rather than the block model, so it carries an item name too
+            table["item.aoaagriculture." + name] = (english, chinese)[index - 2]
         with open(path, "w", encoding="utf-8", newline="\n") as fh:
             json.dump(table, fh, indent=2, ensure_ascii=False, sort_keys=True)
             fh.write("\n")
 
-    print("  chocolate cakes: 3 textures each, 7 models each, 3 recipes")
+    print("  chocolate cakes: 3 textures each, an icon each, 7 models each, 3 recipes")
 
 
 if __name__ == "__main__":

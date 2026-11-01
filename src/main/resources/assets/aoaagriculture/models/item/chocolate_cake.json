@@ -1,3 +1,6 @@
 {
-  "parent": "aoaagriculture:block/chocolate_cake_cake"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "aoaagriculture:item/chocolate_cake"
+  }
 }
