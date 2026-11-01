@@ -223,6 +223,9 @@ public final class Bottles {
         for (Item sauce : Sauces.all()) {
             items.add(new ItemStack(sauce));
         }
+        for (Item cake : Cakes.all()) {
+            items.add(new ItemStack(cake));
+        }
         Tabs.complete(Tabs.FOOD, items);
     }
 

@@ -31,6 +31,8 @@ public class VerifyAgainstSrg {
                 "com.posatasa.aoaagriculture.registry.Tabs",
                 "com.posatasa.aoaagriculture.item.SauceItem",
                 "com.posatasa.aoaagriculture.registry.Sauces",
+                "com.posatasa.aoaagriculture.block.ChocolateCakeBlock",
+                "com.posatasa.aoaagriculture.registry.Cakes",
                 "com.posatasa.aoaagriculture.util.LazyPour",
                 "com.posatasa.aoaagriculture.item.CandiedWaterBottleItem",
                 "com.posatasa.aoaagriculture.registry.Bottles",

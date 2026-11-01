@@ -705,4 +705,7 @@ if __name__ == "__main__":
     import generate_sauces
     generate_sauces.main()
 
+    import generate_cakes
+    generate_cakes.main()
+
     print("done")

@@ -1,0 +1,20 @@
+{
+  "ingredients": [
+    {
+      "item": "aoaagriculture:dark_chocolate_sauce"
+    },
+    {
+      "item": "aoaagriculture:dark_chocolate_sauce"
+    },
+    {
+      "item": "aoaagriculture:dark_chocolate_sauce"
+    },
+    {
+      "item": "minecraft:cake"
+    }
+  ],
+  "result": {
+    "item": "aoaagriculture:dark_chocolate_cake"
+  },
+  "type": "minecraft:crafting_shapeless"
+}
