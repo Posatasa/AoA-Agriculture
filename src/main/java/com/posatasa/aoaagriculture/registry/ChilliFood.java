@@ -39,9 +39,24 @@ public final class ChilliFood {
                     .tab(Tabs.MEALS)
                     .food(new Food.Builder().nutrition(8).saturationMod(0.8F).build())));
 
-    /** The three, in the order the food tab lists them. */
+    public static final RegistryObject<Item> CHICKEN = ITEMS.register("spicy_chicken",
+            () -> new Item(new Item.Properties()
+                    .tab(Tabs.MEALS)
+                    .food(new Food.Builder().nutrition(8).saturationMod(0.8F).build())));
+
+    public static final RegistryObject<Item> PORKCHOP = ITEMS.register("spicy_porkchop",
+            () -> new Item(new Item.Properties()
+                    .tab(Tabs.MEALS)
+                    .food(new Food.Builder().nutrition(10).saturationMod(0.8F).build())));
+
+    /** Every dish the paste goes on, in the order the food tab lists them. */
+    static Item[] dishes() {
+        return new Item[]{STEAK.get(), CHICKEN.get(), PORKCHOP.get(), BREAD.get()};
+    }
+
+    /** The paste itself, which is an ingredient. */
     static Item[] all() {
-        return new Item[]{SAUCE.get(), STEAK.get(), BREAD.get()};
+        return new Item[]{SAUCE.get()};
     }
 
     public static void register(IEventBus modBus) {

@@ -33,6 +33,8 @@ NAMES = {
     "item.aoaagriculture.chilli_sauce": ("Chilli Paste", "辣椒酱"),
     "item.aoaagriculture.chilli_sauce.tooltip": ("Fierce enough to set you alight.", "辣得能把人点着。"),
     "item.aoaagriculture.spicy_steak": ("Spicy Steak", "麻辣牛排"),
+    "item.aoaagriculture.spicy_chicken": ("Spicy Chicken", "麻辣鸡肉"),
+    "item.aoaagriculture.spicy_porkchop": ("Spicy Porkchop", "麻辣猪排"),
     "item.aoaagriculture.chilli_sauce_bread": ("Chilli Paste Bread", "辣椒酱夹面包"),
     "message.aoaagriculture.chilli_water.not_enough": (
         "A cauldron of chilli water takes %s chillies.",
@@ -236,6 +238,10 @@ def main():
                                                  "minecraft:sugar")),
                               ("spicy_steak", ("aoaagriculture:chilli_sauce",
                                                 "minecraft:cooked_beef")),
+                              ("spicy_chicken", ("aoaagriculture:chilli_sauce",
+                                                 "minecraft:cooked_chicken")),
+                              ("spicy_porkchop", ("aoaagriculture:chilli_sauce",
+                                                  "minecraft:cooked_porkchop")),
                               ("chilli_sauce_bread", ("minecraft:bread", "minecraft:bread",
                                                        "aoaagriculture:chilli_sauce"))):
         write_json(os.path.join(DATA, "aoaagriculture", "recipes", name + ".json"), {
@@ -244,7 +250,8 @@ def main():
             "result": {"item": "aoaagriculture:" + name},
         })
 
-    for name in ("chilli_sauce", "spicy_steak", "chilli_sauce_bread"):
+    for name in ("chilli_sauce", "spicy_steak", "spicy_chicken", "spicy_porkchop",
+                 "chilli_sauce_bread"):
         write_json(os.path.join(items, name + ".json"),
                    {"parent": "item/generated",
                     "textures": {"layer0": "aoaagriculture:item/" + name}})

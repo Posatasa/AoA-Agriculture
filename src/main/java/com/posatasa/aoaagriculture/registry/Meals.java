@@ -23,8 +23,9 @@ public final class Meals {
         for (Item slice : Slices.all()) {
             items.add(new ItemStack(slice));
         }
-        items.add(new ItemStack(ChilliFood.STEAK.get()));
-        items.add(new ItemStack(ChilliFood.BREAD.get()));
+        for (Item dish : ChilliFood.dishes()) {
+            items.add(new ItemStack(dish));
+        }
         Tabs.complete(Tabs.MEALS, items);
     }
 
