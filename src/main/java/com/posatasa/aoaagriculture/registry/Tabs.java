@@ -24,8 +24,10 @@ public final class Tabs {
             FarmlandBlocks::fillTab);
     /** Every empty bucket and every variant, then the chilli water cauldron. */
     public static final ItemGroup BUCKETS = group("buckets", Buckets::iconStack, Buckets::fillTab);
-    /** The bottles: the only edible things this mod has. */
+    /** Ingredients: the bottles and the sauces, what goes into a recipe. */
     public static final ItemGroup FOOD = group("food", Bottles::iconStack, Bottles::fillTab);
+    /** Food: cakes, slices and the dishes, everything eaten by itself. */
+    public static final ItemGroup MEALS = group("meals", Meals::iconStack, Meals::fillTab);
 
     private static ItemGroup group(String name, Supplier<ItemStack> icon,
                                    Consumer<NonNullList<ItemStack>> filler) {

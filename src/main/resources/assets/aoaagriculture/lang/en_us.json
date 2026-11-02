@@ -105,6 +105,7 @@
   "item.aoaagriculture.white_chocolate_sauce": "White Chocolate Sauce",
   "itemGroup.aoaagriculture.buckets": "AoA Agriculture: Buckets",
   "itemGroup.aoaagriculture.farmland": "AoA Agriculture: Farmland",
-  "itemGroup.aoaagriculture.food": "AoA Agriculture: Food",
+  "itemGroup.aoaagriculture.food": "AoA Agriculture: Ingredients",
+  "itemGroup.aoaagriculture.meals": "AoA Agriculture: Food",
   "message.aoaagriculture.chilli_water.not_enough": "A cauldron of chilli water takes %s chillies."
 }

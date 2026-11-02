@@ -24,19 +24,19 @@ public final class ChilliFood {
     public static final RegistryObject<Item> SAUCE = ITEMS.register("chilli_sauce",
             () -> new SauceItem(new Item.Properties()
                     .tab(Tabs.FOOD)
-                    .stacksTo(1)
+                    .stacksTo(16)
                     .craftRemainder(Items.BOWL)
                     .food(new Food.Builder().nutrition(0).saturationMod(0.0F).alwaysEat().build()),
                     true));
 
     public static final RegistryObject<Item> STEAK = ITEMS.register("spicy_steak",
             () -> new Item(new Item.Properties()
-                    .tab(Tabs.FOOD)
+                    .tab(Tabs.MEALS)
                     .food(new Food.Builder().nutrition(10).saturationMod(0.8F).build())));
 
     public static final RegistryObject<Item> BREAD = ITEMS.register("chilli_sauce_bread",
             () -> new Item(new Item.Properties()
-                    .tab(Tabs.FOOD)
+                    .tab(Tabs.MEALS)
                     .food(new Food.Builder().nutrition(8).saturationMod(0.8F).build())));
 
     /** The three, in the order the food tab lists them. */

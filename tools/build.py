@@ -631,7 +631,7 @@ def verify_buckets(staging, remapped_dir):
             return fh.read()
 
     tabs_source = registry_source("Tabs.java")
-    for tab in ("FARMLAND", "BUCKETS", "FOOD"):
+    for tab in ("FARMLAND", "BUCKETS", "FOOD", "MEALS"):
         if tab + " = group(" not in tabs_source:
             problems.append("Tabs has no %s group, so one of the three creative tabs is missing"
                             % tab)
@@ -639,7 +639,7 @@ def verify_buckets(staging, remapped_dir):
         problems.append("the tabs do not override fillItemList, so their order is the registry's")
     # Each tab's filler lives in the class that knows what belongs in it; losing one leaves that tab
     # with only whatever the fallback finds.
-    for owner in ("FarmlandBlocks.java", "Buckets.java", "Bottles.java"):
+    for owner in ("FarmlandBlocks.java", "Buckets.java", "Bottles.java", "Meals.java"):
         source = registry_source(owner)
         if "static void fillTab(" not in source:
             problems.append("%s no longer fills its creative tab" % owner)
@@ -921,7 +921,7 @@ def verify_resources(resources_dir, aoa_jar):
     blocks = [e[len("blockstates/"):-len(".json")] for e in sorted(ours)
               if e.startswith("blockstates/")]
     for language, table in languages.items():
-        for tab in ("farmland", "buckets", "food"):
+        for tab in ("farmland", "buckets", "food", "meals"):
             if "itemGroup.aoaagriculture." + tab not in table:
                 problems.append("%s: missing itemGroup.aoaagriculture.%s" % (language, tab))
         for block in blocks:

@@ -25,7 +25,7 @@ public final class Slices {
     static void register(String name, int hunger, float saturation) {
         Food food = new Food.Builder().nutrition(hunger).saturationMod(saturation).build();
         ALL.add(ITEMS.register(name, () -> new Item(new Item.Properties()
-                .tab(Tabs.FOOD)
+                .tab(Tabs.MEALS)
                 .food(food))));
     }
 

@@ -115,7 +115,8 @@ BUCKET_TOOLTIPS = {
 TAB_NAMES = (
     ("farmland", "AoA Agriculture: Farmland", "虚无世界农业：耕地"),
     ("buckets", "AoA Agriculture: Buckets", "虚无世界农业：桶"),
-    ("food", "AoA Agriculture: Food", "虚无世界农业：食材"),
+    ("food", "AoA Agriculture: Ingredients", "虚无世界农业：食材"),
+    ("meals", "AoA Agriculture: Food", "虚无世界农业：食物"),
 )
 
 # FarmlandBlock#MOISTURE runs 0..7, and vanilla draws 0..6 with one texture and 7 with another.

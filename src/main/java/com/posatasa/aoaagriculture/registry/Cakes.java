@@ -57,7 +57,7 @@ public final class Cakes {
         RegistryObject<Block> block = BLOCKS.register(name,
                 () -> new ChocolateCakeBlock(PROPERTIES, hunger, saturation));
         ITEMS.register(name, () -> new BlockItem(block.get(),
-                new Item.Properties().tab(Tabs.FOOD)));
+                new Item.Properties().tab(Tabs.MEALS)));
         Slices.register(name + "_slice", hunger, saturation);
         return block;
     }

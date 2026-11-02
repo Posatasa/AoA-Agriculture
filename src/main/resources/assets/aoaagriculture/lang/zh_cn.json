@@ -106,5 +106,6 @@
   "itemGroup.aoaagriculture.buckets": "虚无世界农业：桶",
   "itemGroup.aoaagriculture.farmland": "虚无世界农业：耕地",
   "itemGroup.aoaagriculture.food": "虚无世界农业：食材",
+  "itemGroup.aoaagriculture.meals": "虚无世界农业：食物",
   "message.aoaagriculture.chilli_water.not_enough": "一锅辣椒水需要 %s 个辣椒。"
 }

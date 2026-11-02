@@ -216,22 +216,14 @@ public final class Bottles {
                 && BucketFamily.sourceOf(fluid) == BucketFamily.sourceOf(candied);
     }
 
-    /** The food tab: this mod's two bottles, then anything else that names it. */
+    /** The ingredients tab: the two bottles and the four sauces, then anything else that names it. */
     static void fillTab(NonNullList<ItemStack> items) {
         items.add(new ItemStack(CANDIED_WATER_BOTTLE.get()));
         items.add(new ItemStack(ChilliWater.BOTTLE.get()));
         for (Item sauce : Sauces.all()) {
             items.add(new ItemStack(sauce));
         }
-        for (Item cake : Cakes.all()) {
-            items.add(new ItemStack(cake));
-        }
-        for (Item slice : Slices.all()) {
-            items.add(new ItemStack(slice));
-        }
-        for (Item food : ChilliFood.all()) {
-            items.add(new ItemStack(food));
-        }
+        items.add(new ItemStack(ChilliFood.SAUCE.get()));
         Tabs.complete(Tabs.FOOD, items);
     }
 

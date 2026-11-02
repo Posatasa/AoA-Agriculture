@@ -30,7 +30,7 @@ public final class Sauces {
     private static RegistryObject<Item> sauce(String name) {
         return ITEMS.register(name, () -> new SauceItem(new Item.Properties()
                 .tab(Tabs.FOOD)
-                .stacksTo(1)
+                .stacksTo(16)
                 .craftRemainder(Items.BOWL)
                 .food(SAUCE)));
     }
