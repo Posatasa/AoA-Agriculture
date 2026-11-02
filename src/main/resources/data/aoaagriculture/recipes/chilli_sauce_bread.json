@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "item": "aoaagriculture:chilli_sauce"
+    }
+  ],
+  "result": {
+    "item": "aoaagriculture:chilli_sauce_bread"
+  }
+}

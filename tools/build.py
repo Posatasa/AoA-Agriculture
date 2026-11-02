@@ -969,7 +969,8 @@ def verify_resources(resources_dir, aoa_jar):
                  "honey_white_chocolate_cake", "cake_slice", "chocolate_cake_slice",
                  "dark_chocolate_cake_slice", "white_chocolate_cake_slice", "honey_cake_slice",
                  "honey_chocolate_cake_slice", "honey_dark_chocolate_cake_slice",
-                 "honey_white_chocolate_cake_slice"):
+                 "honey_white_chocolate_cake_slice", "chilli_sauce", "spicy_steak",
+                 "chilli_sauce_bread"):
         for entry in ("models/item/%s.json" % name, "textures/item/%s.png" % name):
             if entry not in ours:
                 problems.append("missing %s" % entry)

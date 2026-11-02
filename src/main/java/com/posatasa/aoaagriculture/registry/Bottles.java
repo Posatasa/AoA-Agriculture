@@ -229,6 +229,9 @@ public final class Bottles {
         for (Item slice : Slices.all()) {
             items.add(new ItemStack(slice));
         }
+        for (Item food : ChilliFood.all()) {
+            items.add(new ItemStack(food));
+        }
         Tabs.complete(Tabs.FOOD, items);
     }
 

@@ -7,6 +7,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.potion.Effects;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.World;
 
@@ -18,13 +19,24 @@ import net.minecraft.world.World;
  * dropping the bowl when there is no room for it.
  */
 public class SauceItem extends Item {
+    /** Whether eating this sets the eater alight for a second, as chilli water does. */
+    private final boolean setsFire;
+
     public SauceItem(Item.Properties properties) {
+        this(properties, false);
+    }
+
+    public SauceItem(Item.Properties properties, boolean setsFire) {
         super(properties);
+        this.setsFire = setsFire;
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, World world, LivingEntity user) {
         super.finishUsingItem(stack, world, user);
+        if (setsFire && !user.fireImmune() && !user.hasEffect(Effects.FIRE_RESISTANCE)) {
+            user.setSecondsOnFire(1);
+        }
         if (user instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) user;
             CriteriaTriggers.CONSUME_ITEM.trigger(player, stack);

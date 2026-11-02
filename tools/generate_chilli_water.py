@@ -30,6 +30,10 @@ NAMES = {
     "item.aoaagriculture.chilli_water_bottle": ("Chilli Water Bottle", "辣椒水瓶"),
     "item.aoaagriculture.chilli_water_bottle.tooltip": (
         "No food in it, and it sets you alight.", "不顶饿，还会让你着火。"),
+    "item.aoaagriculture.chilli_sauce": ("Chilli Paste", "辣椒酱"),
+    "item.aoaagriculture.chilli_sauce.tooltip": ("Fierce enough to set you alight.", "辣得能把人点着。"),
+    "item.aoaagriculture.spicy_steak": ("Spicy Steak", "麻辣牛排"),
+    "item.aoaagriculture.chilli_sauce_bread": ("Chilli Paste Bread", "辣椒酱夹面包"),
     "message.aoaagriculture.chilli_water.not_enough": (
         "A cauldron of chilli water takes %s chillies.",
         "一锅辣椒水需要 %s 个辣椒。"),
@@ -225,6 +229,25 @@ def main():
         ],
         "result": {"item": "aoa3:hellfire"},
     })
+
+    # the food made from chilli water: a paste, and two things it goes on
+    for name, ingredients in (("chilli_sauce", ("minecraft:bowl",
+                                                 "aoaagriculture:chilli_water_bottle",
+                                                 "minecraft:sugar")),
+                              ("spicy_steak", ("aoaagriculture:chilli_sauce",
+                                                "minecraft:cooked_beef")),
+                              ("chilli_sauce_bread", ("minecraft:bread", "minecraft:bread",
+                                                       "aoaagriculture:chilli_sauce"))):
+        write_json(os.path.join(DATA, "aoaagriculture", "recipes", name + ".json"), {
+            "type": "minecraft:crafting_shapeless",
+            "ingredients": [{"item": item} for item in ingredients],
+            "result": {"item": "aoaagriculture:" + name},
+        })
+
+    for name in ("chilli_sauce", "spicy_steak", "chilli_sauce_bread"):
+        write_json(os.path.join(items, name + ".json"),
+                   {"parent": "item/generated",
+                    "textures": {"layer0": "aoaagriculture:item/" + name}})
 
     for language, index in (("en_us", 0), ("zh_cn", 1)):
         path = os.path.join(ASSETS, "lang", language + ".json")
