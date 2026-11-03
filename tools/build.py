@@ -668,6 +668,34 @@ def verify_buckets(staging, remapped_dir):
     print("buckets never name a vanilla bucket, and override both conversion points")
 
 
+def verify_no_aoa_assets(jar_path, aoa_jar):
+    """Fails if any texture in the built jar is byte-for-byte one of AoA's.
+
+    Names would not catch it - a copied file is usually renamed - so this hashes both sets. The mod's own
+    textures are generated from vanilla's shapes, or drawn by hand, so an exact match means something of
+    AoA's has been shipped: the one thing this add-on promises not to do.
+    """
+    import hashlib
+    import zipfile
+
+    with zipfile.ZipFile(aoa_jar) as aoa:
+        theirs = {hashlib.sha256(aoa.read(name)).hexdigest(): name
+                  for name in aoa.namelist() if name.endswith(".png")}
+
+    shared = []
+    with zipfile.ZipFile(jar_path) as ours:
+        for name in ours.namelist():
+            if not name.endswith(".png"):
+                continue
+            digest = hashlib.sha256(ours.read(name)).hexdigest()
+            if digest in theirs:
+                shared.append("%s is AoA's %s" % (name, theirs[digest]))
+
+    if shared:
+        raise SystemExit("the jar redistributes AoA art:\n  " + "\n  ".join(shared))
+    print("no texture in the jar is one of AoA's own files")
+
+
 def verify_aoa_names(staging, aoa_jar):
     """Checks that every AoA registry name and sound this add-on uses exists in the AoA jar.
 
@@ -1038,7 +1066,7 @@ def verify_resources(resources_dir, aoa_jar):
           % (len(ours), len(blocks), len(languages)))
 
 
-def build(staging, out_jar):
+def build(staging, out_jar, aoa_jar=None):
     classpath_parts = [MCP_JAR] + cached_jars()
     aoa = find_aoa_jar(args.aoa_jar)
     if aoa:
@@ -1158,6 +1186,9 @@ def build(staging, out_jar):
     print("wrote %s (%d entries, %d bytes)" % (out_jar, len(entries) + 1,
                                                os.path.getsize(out_jar)))
 
+    if aoa_jar:
+        verify_no_aoa_assets(out_jar, aoa_jar)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -1175,7 +1206,7 @@ if __name__ == "__main__":
     os.makedirs(staging)
 
     jar_path = os.path.join(ROOT, "dist", "%s-%s.jar" % (MOD_ID, VERSION))
-    build(staging, jar_path)
+    build(staging, jar_path, find_aoa_jar(args.aoa_jar))
 
     import hashlib
     digest = hashlib.sha256(open(jar_path, "rb").read()).hexdigest()
