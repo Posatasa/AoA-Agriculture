@@ -49,9 +49,15 @@ public final class ChilliFood {
                     .tab(Tabs.MEALS)
                     .food(new Food.Builder().nutrition(10).saturationMod(0.8F).build())));
 
+    public static final RegistryObject<Item> MUTTON = ITEMS.register("spicy_mutton",
+            () -> new Item(new Item.Properties()
+                    .tab(Tabs.MEALS)
+                    .food(new Food.Builder().nutrition(8).saturationMod(0.8F).build())));
+
     /** Every dish the paste goes on, in the order the food tab lists them. */
     static Item[] dishes() {
-        return new Item[]{STEAK.get(), CHICKEN.get(), PORKCHOP.get(), BREAD.get()};
+        return new Item[]{STEAK.get(), CHICKEN.get(), PORKCHOP.get(), MUTTON.get(),
+                BREAD.get()};
     }
 
     /** The paste itself, which is an ingredient. */
