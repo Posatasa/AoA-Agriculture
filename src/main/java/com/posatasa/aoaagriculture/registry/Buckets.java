@@ -9,6 +9,10 @@ import com.posatasa.aoaagriculture.item.LavaOnlyBucketItem;
 import com.posatasa.aoaagriculture.item.LavaTankBucketItem;
 import com.posatasa.aoaagriculture.item.LunarWaterBucketItem;
 import com.posatasa.aoaagriculture.item.BucketFamily;
+import com.posatasa.aoaagriculture.item.FallSaveWaterBucketItem;
+import com.posatasa.aoaagriculture.item.LongReachBucketItem;
+import com.posatasa.aoaagriculture.item.LuckyBucketItem;
+import com.posatasa.aoaagriculture.item.NightVisionBucketItem;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.entity.player.PlayerEntity;
@@ -64,6 +68,18 @@ public final class Buckets {
     public static final BucketFamily ELECANIUM = new BucketFamily("elecanium");
     /** Varsium: its lava bucket spends the lava to refill Energy. */
     public static final BucketFamily VARSIUM = new BucketFamily("varsium");
+    /** Skeletal: four ordinary buckets, which is the whole of it. */
+    public static final BucketFamily SKELETAL = new BucketFamily("skeletal");
+    /** Baronyte: its lava bucket spends the lava to refill Rage, as Varsium's does Energy. */
+    public static final BucketFamily BARONYTE = new BucketFamily("baronyte");
+    /** Ghastly: its water bucket can be poured at the ground below when nothing is in reach. */
+    public static final BucketFamily GHASTLY = new BucketFamily("ghastly");
+    /** Ghoulish: its empty bucket fills from water it can see, thirty blocks away. */
+    public static final BucketFamily GHOULISH = new BucketFamily("ghoulish");
+    /** Lyon: its empty bucket has one chance in five of a crystal box with each fill. */
+    public static final BucketFamily LYON = new BucketFamily("lyon");
+    /** Mystite: its water bucket grants night vision when the player has none. */
+    public static final BucketFamily MYSTITE = new BucketFamily("mystite");
 
     /** The icon for the bucket tab: the first metal's empty bucket. */
     static ItemStack iconStack() {
@@ -79,7 +95,8 @@ public final class Buckets {
      * water, lava, candied water - which is {@code Kind}'s declaration order.
      */
     private static final java.util.List<BucketFamily> TAB_ORDER = java.util.Arrays.asList(
-            LIMONITE, ROSITE, EMBERSTONE, BLAZIUM, ELECANIUM, VARSIUM, LUNAR, SHYRE, DARK);
+            LIMONITE, ROSITE, EMBERSTONE, BLAZIUM, ELECANIUM, VARSIUM, LUNAR, SHYRE, DARK,
+            SKELETAL, BARONYTE, GHASTLY, GHOULISH, LYON, MYSTITE);
 
     private static Fluid candiedWater;
 
@@ -95,6 +112,15 @@ public final class Buckets {
         emberstone();
         blazium();
         dark();
+        family(SKELETAL, AoABucketItem::new);
+        family(BARONYTE, AoABucketItem::new,
+                (fluid, properties, family) -> new ResourceRefillBucketItem(fluid, properties,
+                        family, AoAResourceRefill.Kind.RAGE),
+                AoABucketItem::new);
+        family(GHASTLY, FallSaveWaterBucketItem::new);
+        family(GHOULISH, AoABucketItem::new, AoABucketItem::new, LongReachBucketItem::new);
+        family(LYON, AoABucketItem::new, AoABucketItem::new, LuckyBucketItem::new);
+        family(MYSTITE, NightVisionBucketItem::new);
         ITEMS.register(modBus);
         MinecraftForge.EVENT_BUS.addListener(Buckets::onFall);
     }
@@ -105,14 +131,30 @@ public final class Buckets {
     }
 
     private static void family(BucketFamily family, Factory waterFactory) {
+        family(family, waterFactory, AoABucketItem::new, AoABucketItem::new);
+    }
+
+    private static void family(BucketFamily family, Factory waterFactory, Factory lavaFactory) {
+        family(family, waterFactory, lavaFactory, AoABucketItem::new);
+    }
+
+    /**
+     * Registers a family, letting the empty, water and lava buckets each be built differently.
+     *
+     * <p>Most families use the plain bucket three times; the ones with a trick put it on the bucket whose
+     * moment it is - the empty bucket for Ghoulish and Lyon, which act when they fill, and the water
+     * bucket for Ghastly, Mystite and the resource ones, which act when they pour.
+     */
+    private static void family(BucketFamily family, Factory waterFactory, Factory lavaFactory,
+                               Factory emptyFactory) {
         String metal = family.metal();
-        Factory ordinary = AoABucketItem::new;
         // An empty bucket stacks to 16 and a filled one to 1, exactly as vanilla's do.
-        bind(family, BucketFamily.Kind.EMPTY, metal + "_bucket", () -> Fluids.EMPTY, 16, ordinary);
+        bind(family, BucketFamily.Kind.EMPTY, metal + "_bucket", () -> Fluids.EMPTY, 16,
+                emptyFactory);
         bind(family, BucketFamily.Kind.WATER, "water_" + metal + "_bucket", () -> Fluids.WATER, 1,
                 waterFactory);
         bind(family, BucketFamily.Kind.LAVA, "lava_" + metal + "_bucket", () -> Fluids.LAVA, 1,
-                ordinary);
+                lavaFactory);
         // Candied water is AoA's fluid and chilli water is ours; both are registered after items, so
         // these two are built around lazily resolved fluids rather than values.
         bindLazy(family, BucketFamily.Kind.CANDIED_WATER,

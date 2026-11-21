@@ -74,6 +74,12 @@ METAL_NAMES = {
     "dark": ("Dark", "暗黑"),
     "elecanium": ("Elecanium", "荧银"),
     "varsium": ("Varsium", "超金"),
+    "skeletal": ("Skeletal", "骷髅"),
+    "baronyte": ("Baronyte", "爵士"),
+    "ghastly": ("Ghastly", "阴森"),
+    "ghoulish": ("Ghoulish", "恐惧"),
+    "lyon": ("Lyon", "焦铁"),
+    "mystite": ("Mystite", "神秘"),
 }
 
 # Tooltips for the two buckets that do more than a bucket does. The keys are per item name, because
@@ -85,6 +91,21 @@ BUCKET_TOOLTIPS = {
     "water_lunar_bucket": (
         "Protects from fall damage while held.",
         "手持时免疫摔落伤害。"),
+    "lava_baronyte_bucket": (
+        "Use it on nothing to spend the lava and refill Rage.",
+        "对着空气使用：消耗熔岩，回满怒火。"),
+    "water_ghastly_bucket": (
+        "Right-click the air to drop water at the ground below you.",
+        "对着空气右键：在你脚下的地面放置水。"),
+    "ghoulish_bucket": (
+        "Fills from water up to thirty blocks away.",
+        "可以从 30 格以内的水源取水。"),
+    "lyon_bucket": (
+        "One fill in five also brings loot from a crystal box.",
+        "每次取水有 1/5 概率掉落水晶箱的战利品。"),
+    "water_mystite_bucket": (
+        "Grants five minutes of night vision while you have none.",
+        "没有夜视效果时，给予 5 分钟夜视。"),
     "lava_varsium_bucket": (
         "Use it on nothing to spend the lava and refill Energy.",
         "对着空气使用：消耗熔岩，回满能量。"),
@@ -160,8 +181,9 @@ EMBER_KINDS = (("", "bucket", None), ("lava_", "lava_bucket", None))
 DARK_KINDS = EMBER_KINDS
 
 # Metals whose icon is two colours side by side: their bucket is painted the same way,
-# left half from the icon's left half and right half from its right half.
-HALVED_METALS = {"elecanium"}
+# left half from the icon's left half and right half from its right half. Lyon is the second:
+# its ingot is split down the middle just as Elecanium's is.
+HALVED_METALS = {"elecanium", "lyon"}
 
 BUCKET_METALS = (
     ("limonite", "limonite_ingot", (("limonite_ingot", 1.00),), BUCKET_KINDS),
@@ -184,6 +206,14 @@ BUCKET_METALS = (
     ("elecanium", "elecanium_ingot", (("elecanium_ingot", 1.00),), BUCKET_KINDS),
     # Varsium, in the gold of its blocks rather than the browner ingot.
     ("varsium", "varsium_ingot", (("varsium_block", 1.00),), BUCKET_KINDS),
+    # The six plain metal buckets. Each is drawn from its own ingot; Lyon's is halved like
+    # Elecanium's, because its ingot is too.
+    ("skeletal", "skeletal_ingot", (("skeletal_ingot", 1.00),), BUCKET_KINDS),
+    ("baronyte", "baronyte_ingot", (("baronyte_ingot", 1.00),), BUCKET_KINDS),
+    ("ghastly", "ghastly_ingot", (("ghastly_ingot", 1.00),), BUCKET_KINDS),
+    ("ghoulish", "ghoulish_ingot", (("ghoulish_ingot", 1.00),), BUCKET_KINDS),
+    ("lyon", "lyon_ingot", (("lyon_ingot", 1.00),), BUCKET_KINDS),
+    ("mystite", "mystite_ingot", (("mystite_ingot", 1.00),), BUCKET_KINDS),
 )
 
 

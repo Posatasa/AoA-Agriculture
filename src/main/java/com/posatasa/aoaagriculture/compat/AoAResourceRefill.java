@@ -34,7 +34,8 @@ public final class AoAResourceRefill {
     /** One AoA resource this add-on can refill. */
     public enum Kind {
         SPIRIT("SPIRIT"),
-        ENERGY("ENERGY");
+        ENERGY("ENERGY"),
+        RAGE("RAGE");
 
         private final String field;
 

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# #",
+    " # "
+  ],
+  "key": {
+    "#": {
+      "item": "aoa3:baronyte_ingot"
+    }
+  },
+  "result": {
+    "item": "aoaagriculture:baronyte_bucket"
+  }
+}

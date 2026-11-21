@@ -36,6 +36,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -89,6 +93,20 @@ public class AoABucketItem extends BucketItem {
             return stack;
         }
         return new ItemStack(empty);
+    }
+
+    /**
+     * Adds the tooltip keyed after this item's own name, for buckets that do more than hold a fluid.
+     *
+     * <p>Written once here so each of those buckets does not carry its own copy of the lookup.
+     */
+    protected void addOwnTooltip(List<ITextComponent> tooltip) {
+        ResourceLocation name = getRegistryName();
+        if (name != null) {
+            tooltip.add(new TranslationTextComponent(
+                    "item.aoaagriculture." + name.getPath() + ".tooltip")
+                    .withStyle(TextFormatting.GRAY));
+        }
     }
 
     @Override
