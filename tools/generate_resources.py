@@ -62,6 +62,7 @@ BUCKET_NAMES = {
     "water_": ("{} Water Bucket", "{}水桶"),
     "lava_": ("{} Lava Bucket", "{}熔岩桶"),
     "candied_water_": ("{} Candied Water Bucket", "{}糖水桶"),
+    "chilli_water_": ("{} Chilli Water Bucket", "{}辣椒水桶"),
 }
 METAL_NAMES = {
     "limonite": ("Limonite", "褐铁"),
@@ -138,10 +139,14 @@ WELL_BRIGHTNESS = 0.74
 
 # One entry per bucket kind: the registry-name prefix, the vanilla icon it starts from, and whether
 # the fluid should be re-tinted (only candied water, whose contents are not vanilla's water).
-BUCKET_KINDS = (("", "bucket", False),
-                ("water_", "water_bucket", False),
-                ("lava_", "lava_bucket", False),
-                ("candied_water_", "water_bucket", True))
+# Which fluid each kind of bucket shows, if any: the fluid's region of vanilla's icon is tinted with it,
+# and the metal body is drawn exactly like every other bucket of that metal - which is why the chilli
+# water buckets are generated here rather than separately, so Shyre is a gradient in those too.
+BUCKET_KINDS = (("", "bucket", None),
+                ("water_", "water_bucket", None),
+                ("lava_", "lava_bucket", None),
+                ("candied_water_", "water_bucket", "candied"),
+                ("chilli_water_", "water_bucket", "chilli"))
 # Each AoA metal that gets buckets: its name, the ingot its crafting recipe uses, the colours its
 # metal is drawn in (icon names with a brightness scale, top to bottom - one entry means flat), and
 # which buckets it has.
@@ -149,7 +154,7 @@ BUCKET_KINDS = (("", "bucket", False),
 # The scales matter as much as the hues. Shyre's gem and its ingot sit barely twenty degrees apart,
 # so blending them at one brightness looked flat; the gem is lifted and the ingot dropped, which
 # makes the two ends of the gradient obvious.
-EMBER_KINDS = (("", "bucket", False), ("lava_", "lava_bucket", False))
+EMBER_KINDS = (("", "bucket", None), ("lava_", "lava_bucket", None))
 
 # The Dark family is named the same way as the others: plain name empty, lava_ name filled.
 DARK_KINDS = EMBER_KINDS
@@ -357,6 +362,12 @@ def generate_bucket_icons(zm, za):
     candied = load(za, "assets/aoa3/textures/item/candied_water_bucket.png")
     candied_rgb = candied[:, :, :3][(candied[:, :, 3] > 0) & (saturation(candied[:, :, :3]) >= 0.25)]
     candied_tint = candied_rgb.mean(axis=0)
+    # Chilli water's colour is the one the fluid itself uses, so the bucket and the fluid agree.
+    import generate_chilli_water
+    TINTS = {"candied": candied_tint,
+             "chilli": np.array(generate_chilli_water.COLOR, dtype=float)}
+
+    globals()["TINTS"] = TINTS
 
     aoa_entries = set(za.namelist())
 
@@ -428,11 +439,11 @@ def generate_bucket_icons(zm, za):
         else:
             stops = [colour_of(icon) * scale for icon, scale in colour_stops]
 
-        for prefix, shape, tint_fluid in kinds:
+        for prefix, shape, tint_name in kinds:
             base = load(zm, "assets/minecraft/textures/item/%s.png" % shape)
             picture = halves_map(base, stops[0], stops[1]) if metal_name in HALVED_METALS \
                 else metal_map(base, stops)
-            image = recolour(base, picture, candied_tint if tint_fluid else None)
+            image = recolour(base, picture, TINTS.get(tint_name))
             Image.fromarray(image).save(
                 os.path.join(item_dir, "%s%s_bucket.png" % (prefix, metal_name)))
         print("  %s: %d bucket icons%s" % (metal_name, len(kinds),

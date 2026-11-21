@@ -42,29 +42,6 @@ NAMES = {
         "一锅辣椒水需要 %s 个辣椒。"),
 }
 
-METAL_NAMES = {
-    "limonite": ("Limonite", "褐铁"),
-    "rosite": ("Rosite", "玫石"),
-    "lunar": ("Lunar", "月锭"),
-    "shyre": ("Shyre", "塞尔瑞"),
-    "elecanium": ("Elecanium", "荧银"),
-    "varsium": ("Varsium", "超金"),
-}
-for metal, (english, chinese) in METAL_NAMES.items():
-    NAMES["item.aoaagriculture.chilli_water_%s_bucket" % metal] = (
-        "Chilli Water %s Bucket" % english, "%s辣椒水桶" % chinese)
-
-# The metal each bucket's own icon is coloured from, and how far to darken it.
-METAL_ICONS = {
-    "limonite": ("limonite_ingot", 1.00),
-    "rosite": ("rosite_ingot", 1.00),
-    "lunar": ("lunar_ingot", 1.00),
-    "shyre": ("shyrestone_ingot", 0.70),
-    "elecanium": ("elecanium_ingot", 1.00),
-    "varsium": ("varsium_block", 1.00),
-}
-
-
 def write_json(path, payload):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
@@ -105,38 +82,6 @@ def with_fluid(base):
     result = base.copy()
     result[:, :, :3] = out
     return np.clip(np.rint(result), 0, 255).astype(np.uint8)
-
-
-def metal_bucket(base, icon, scale):
-    """The chilli water bucket in one metal: the fluid stays, the metal takes the metal's colour."""
-    with zipfile.ZipFile(AOA) as jar:
-        entries = set(jar.namelist())
-        path = None
-        for folder in ("item", "block"):
-            candidate = "assets/aoa3/textures/%s/%s.png" % (folder, icon)
-            if candidate in entries:
-                path = candidate
-                break
-        if path is None:
-            raise SystemExit("AoA has no texture for %s" % icon)
-        with jar.open(path) as fh:
-            source = np.asarray(Image.open(io.BytesIO(fh.read())).convert("RGBA")).astype(float)
-
-    visible = source[:, :, 3] > 0
-    colour = source[:, :, :3][visible].mean(axis=0)
-    colour = colour * (119.0 / max(0.2126 * colour[0] + 0.7152 * colour[1]
-                                   + 0.0722 * colour[2], 1e-6)) * scale
-
-    image = with_fluid(base)
-    rgb, alpha = image[:, :, :3].copy(), image[:, :, 3]
-    top, bottom = rgb.max(axis=2), rgb.min(axis=2)
-    saturation = np.where(top > 0, (top - bottom) / np.maximum(top, 1), 0)
-    metal = (alpha > 0) & (saturation < 0.25)
-    luminance = 0.2126 * rgb[:, :, 0] + 0.7152 * rgb[:, :, 1] + 0.0722 * rgb[:, :, 2]
-    reference = luminance[metal].mean()
-    out = image.copy()
-    out[:, :, :3][metal] = np.clip(colour[None, :] * (luminance[metal] / reference)[:, None], 0, 255)
-    return np.clip(np.rint(out), 0, 255).astype(np.uint8)
 
 
 def main():
@@ -197,11 +142,6 @@ def main():
     write_json(os.path.join(items, "chilli_water_bottle.json"),
                {"parent": "item/generated",
                 "textures": {"layer0": "aoaagriculture:item/chilli_water_bottle"}})
-    for metal in METAL_NAMES:
-        name = "chilli_water_%s_bucket" % metal
-        write_json(os.path.join(items, name + ".json"),
-                   {"parent": "item/generated",
-                    "textures": {"layer0": "aoaagriculture:item/" + name}})
 
     Image.fromarray(with_fluid(bucket)).save(os.path.join(item_textures, "chilli_water_bucket.png"))
 
@@ -217,9 +157,6 @@ def main():
     Image.fromarray(np.clip(np.rint(bottle), 0, 255).astype(np.uint8)).save(
         os.path.join(item_textures, "chilli_water_bottle.png"))
 
-    for metal, (icon, scale) in METAL_ICONS.items():
-        Image.fromarray(metal_bucket(bucket, icon, scale)).save(
-            os.path.join(item_textures, "chilli_water_%s_bucket.png" % metal))
 
     # one bottle, gunpowder and a limonite nugget make AoA's own Hellfire
     write_json(os.path.join(DATA, "aoaagriculture", "recipes",

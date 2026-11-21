@@ -232,6 +232,8 @@ public final class Buckets {
                         family, AoAResourceRefill.Kind.ENERGY));
         bindLazy(VARSIUM, BucketFamily.Kind.CANDIED_WATER, "candied_water_varsium_bucket",
                 Buckets::candiedWater);
+        bindLazy(VARSIUM, BucketFamily.Kind.CHILLI_WATER, "chilli_water_varsium_bucket",
+                ChilliWater::still);
     }
 
     /** Adds this mod's buckets to the bucket tab, in {@link #TAB_ORDER}. */
