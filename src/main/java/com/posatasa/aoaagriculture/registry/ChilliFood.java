@@ -54,9 +54,30 @@ public final class ChilliFood {
                     .tab(Tabs.MEALS)
                     .food(new Food.Builder().nutrition(8).saturationMod(0.8F).build())));
 
+    public static final RegistryObject<Item> CHARGER_SHANK = ITEMS.register("spicy_charger_shank",
+            () -> new Item(new Item.Properties()
+                    .tab(Tabs.MEALS)
+                    .food(new Food.Builder().nutrition(8).saturationMod(0.8F).build())));
+
+    public static final RegistryObject<Item> CHIMERA_CHOP = ITEMS.register("spicy_chimera_chop",
+            () -> new Item(new Item.Properties()
+                    .tab(Tabs.MEALS)
+                    .food(new Food.Builder().nutrition(10).saturationMod(0.8F).build())));
+
+    public static final RegistryObject<Item> FISH = ITEMS.register("spicy_fish",
+            () -> new Item(new Item.Properties()
+                    .tab(Tabs.MEALS)
+                    .food(new Food.Builder().nutrition(10).saturationMod(0.8F).build())));
+
+    public static final RegistryObject<Item> FURLION_CHOP = ITEMS.register("spicy_furlion_chop",
+            () -> new Item(new Item.Properties()
+                    .tab(Tabs.MEALS)
+                    .food(new Food.Builder().nutrition(10).saturationMod(0.8F).build())));
+
     /** Every dish the paste goes on, in the order the food tab lists them. */
     static Item[] dishes() {
         return new Item[]{STEAK.get(), CHICKEN.get(), PORKCHOP.get(), MUTTON.get(),
+                CHARGER_SHANK.get(), CHIMERA_CHOP.get(), FISH.get(), FURLION_CHOP.get(),
                 BREAD.get()};
     }
 

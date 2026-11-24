@@ -36,6 +36,10 @@ NAMES = {
     "item.aoaagriculture.spicy_chicken": ("Spicy Chicken", "麻辣鸡肉"),
     "item.aoaagriculture.spicy_porkchop": ("Spicy Porkchop", "麻辣猪排"),
     "item.aoaagriculture.spicy_mutton": ("Spicy Mutton", "麻辣羊排"),
+    "item.aoaagriculture.spicy_charger_shank": ("Spicy Charger Shank", "麻辣袭击者腿排"),
+    "item.aoaagriculture.spicy_chimera_chop": ("Spicy Chimera Chop", "麻辣奇美拉肉排"),
+    "item.aoaagriculture.spicy_fish": ("Spicy Fish", "麻辣鱼"),
+    "item.aoaagriculture.spicy_furlion_chop": ("Spicy Furlion Chop", "麻辣毛狮肉排"),
     "item.aoaagriculture.chilli_sauce_bread": ("Chilli Paste Bread", "辣椒酱夹面包"),
     "message.aoaagriculture.chilli_water.not_enough": (
         "A cauldron of chilli water takes %s chillies.",
@@ -182,6 +186,14 @@ def main():
                                                   "minecraft:cooked_porkchop")),
                               ("spicy_mutton", ("aoaagriculture:chilli_sauce",
                                                 "minecraft:cooked_mutton")),
+                              ("spicy_charger_shank", ("aoaagriculture:chilli_sauce",
+                                                       "aoa3:cooked_charger_shank")),
+                              ("spicy_chimera_chop", ("aoaagriculture:chilli_sauce",
+                                                      "aoa3:cooked_chimera_chop")),
+                              ("spicy_fish", ("aoaagriculture:chilli_sauce",
+                                              "aoa3:cooked_fish")),
+                              ("spicy_furlion_chop", ("aoaagriculture:chilli_sauce",
+                                                      "aoa3:cooked_furlion_chop")),
                               ("chilli_sauce_bread", ("minecraft:bread", "minecraft:bread",
                                                        "aoaagriculture:chilli_sauce"))):
         write_json(os.path.join(DATA, "aoaagriculture", "recipes", name + ".json"), {
@@ -191,7 +203,8 @@ def main():
         })
 
     for name in ("chilli_sauce", "spicy_steak", "spicy_chicken", "spicy_porkchop",
-                 "spicy_mutton", "chilli_sauce_bread"):
+                 "spicy_mutton", "spicy_charger_shank", "spicy_chimera_chop", "spicy_fish",
+                 "spicy_furlion_chop", "chilli_sauce_bread"):
         write_json(os.path.join(items, name + ".json"),
                    {"parent": "item/generated",
                     "textures": {"layer0": "aoaagriculture:item/" + name}})
