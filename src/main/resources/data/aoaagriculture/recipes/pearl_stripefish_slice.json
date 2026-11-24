@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:pearl_stripefish"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:pearl_stripefish_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

@@ -1,0 +1,17 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:sapphire_strider"
+    }
+  ],
+  "result": [
+    {
+      "count": 4,
+      "item": "aoaagriculture:sapphire_strider_slice"
+    }
+  ],
+  "tool": {
+    "tag": "forge:tools/knives"
+  },
+  "type": "farmersdelight:cutting"
+}

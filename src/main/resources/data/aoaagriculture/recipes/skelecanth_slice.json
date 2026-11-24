@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:skelecanth"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:skelecanth_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

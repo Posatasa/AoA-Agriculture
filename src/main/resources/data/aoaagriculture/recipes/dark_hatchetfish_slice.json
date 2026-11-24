@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:dark_hatchetfish"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:dark_hatchetfish_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

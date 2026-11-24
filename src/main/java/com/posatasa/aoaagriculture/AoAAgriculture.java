@@ -5,6 +5,7 @@ import com.posatasa.aoaagriculture.registry.Buckets;
 import com.posatasa.aoaagriculture.registry.ChilliWater;
 import com.posatasa.aoaagriculture.registry.Cakes;
 import com.posatasa.aoaagriculture.registry.ChilliFood;
+import com.posatasa.aoaagriculture.registry.Sashimi;
 import com.posatasa.aoaagriculture.registry.Sauces;
 import com.posatasa.aoaagriculture.registry.FarmlandBlocks;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -29,5 +30,6 @@ public class AoAAgriculture {
         Sauces.register(bus);
         Cakes.register(bus);
         ChilliFood.register(bus);
+        Sashimi.register(bus);
     }
 }

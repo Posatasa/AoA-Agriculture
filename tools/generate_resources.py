@@ -753,4 +753,7 @@ if __name__ == "__main__":
     import generate_cake_family
     generate_cake_family.main()
 
+    import generate_sashimi
+    generate_sashimi.main()
+
     print("done")

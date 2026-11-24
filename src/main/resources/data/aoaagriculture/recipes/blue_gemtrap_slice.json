@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:blue_gemtrap"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:blue_gemtrap_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

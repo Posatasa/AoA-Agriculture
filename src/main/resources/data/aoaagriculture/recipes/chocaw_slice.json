@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:chocaw"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:chocaw_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

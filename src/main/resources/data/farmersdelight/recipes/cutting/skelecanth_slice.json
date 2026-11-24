@@ -1,0 +1,17 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:skelecanth"
+    }
+  ],
+  "result": [
+    {
+      "count": 4,
+      "item": "aoaagriculture:skelecanth_slice"
+    }
+  ],
+  "tool": {
+    "tag": "forge:tools/knives"
+  },
+  "type": "farmersdelight:cutting"
+}

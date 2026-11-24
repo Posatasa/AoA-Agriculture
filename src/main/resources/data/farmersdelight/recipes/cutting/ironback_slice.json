@@ -1,0 +1,17 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:ironback"
+    }
+  ],
+  "result": [
+    {
+      "count": 4,
+      "item": "aoaagriculture:ironback_slice"
+    }
+  ],
+  "tool": {
+    "tag": "forge:tools/knives"
+  },
+  "type": "farmersdelight:cutting"
+}

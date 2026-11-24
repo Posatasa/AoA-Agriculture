@@ -1,0 +1,17 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:blue_gemtrap"
+    }
+  ],
+  "result": [
+    {
+      "count": 4,
+      "item": "aoaagriculture:blue_gemtrap_slice"
+    }
+  ],
+  "tool": {
+    "tag": "forge:tools/knives"
+  },
+  "type": "farmersdelight:cutting"
+}

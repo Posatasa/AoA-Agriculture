@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:parapiranha"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:parapiranha_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

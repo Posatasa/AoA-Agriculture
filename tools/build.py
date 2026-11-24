@@ -1000,7 +1000,16 @@ def verify_resources(resources_dir, aoa_jar):
                  "honey_white_chocolate_cake_slice", "chilli_sauce", "spicy_steak",
                  "spicy_chicken", "spicy_porkchop", "spicy_mutton",
                  "spicy_charger_shank", "spicy_chimera_chop", "spicy_fish",
-                 "spicy_furlion_chop", "chilli_sauce_bread"):
+                 "spicy_furlion_chop", "chilli_sauce_bread",
+                 "rainbowfish_slice", "sailback_slice", "violet_skipper_slice",
+                 "crimson_skipper_slice", "candlefish_slice", "charred_char_slice",
+                 "crimson_stripefish_slice", "dark_hatchetfish_slice", "chocaw_slice",
+                 "parapiranha_slice", "jamfish_slice", "sapphire_strider_slice",
+                 "ironback_slice", "pearl_stripefish_slice", "razorfish_slice",
+                 "reeftooth_slice", "rocketfish_slice", "skelecanth_slice",
+                 "turquoise_stripefish_slice", "blue_gemtrap_slice", "green_gemtrap_slice",
+                 "purple_gemtrap_slice", "red_gemtrap_slice", "white_gemtrap_slice",
+                 "yellow_gemtrap_slice"):
         for entry in ("models/item/%s.json" % name, "textures/item/%s.png" % name):
             if entry not in ours:
                 problems.append("missing %s" % entry)

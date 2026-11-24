@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:crimson_skipper"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:crimson_skipper_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

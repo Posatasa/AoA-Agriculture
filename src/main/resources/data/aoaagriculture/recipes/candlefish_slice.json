@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:candlefish"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:candlefish_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

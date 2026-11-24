@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:ironback"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:ironback_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

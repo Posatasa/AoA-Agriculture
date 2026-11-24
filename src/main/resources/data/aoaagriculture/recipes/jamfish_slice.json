@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:jamfish"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:jamfish_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

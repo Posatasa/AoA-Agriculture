@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:rocketfish"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:rocketfish_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

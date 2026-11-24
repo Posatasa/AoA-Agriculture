@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:crimson_stripefish"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:crimson_stripefish_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

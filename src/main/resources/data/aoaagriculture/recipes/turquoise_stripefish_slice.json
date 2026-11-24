@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "aoa3:turquoise_stripefish"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "aoaagriculture:turquoise_stripefish_slice"
+  },
+  "type": "minecraft:crafting_shapeless"
+}
